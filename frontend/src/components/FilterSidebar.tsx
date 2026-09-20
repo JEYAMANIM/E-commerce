@@ -31,21 +31,20 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   const popularTags = [
-    '4k', '144hz', 'medical', 'display', 'audio', 'headphones',
-    'wireless', 'bluetooth', 'smartwatch', 'waterproof', 'casual',
-    'skincare', 'hydrating', 'camera', 'laptop', 'fitness'
+    'vintage', 'heart', 't-light', 'candle', 'lantern', 'mug',
+    'baking', 'bag', 'christmas', 'flower', 'party', 'craft',
+    'decor', 'retro', 'knitted', 'metal', 'glass', 'ceramic'
   ];
 
   const tagsToDisplay = availableTags.length > 0 
-    ? Array.from(new Set([...popularTags, ...availableTags])).slice(0, 24)
+    ? Array.from(new Set([...availableTags, ...popularTags])).slice(0, 24)
     : popularTags;
 
   const priceTiers = [
-    { label: 'Under $25', max: 25 },
-    { label: '$25 to $50', max: 50 },
-    { label: '$50 to $100', max: 100 },
-    { label: '$100 to $250', max: 250 },
-    { label: '$250 to $500', max: 500 },
+    { label: 'Under $10', max: 10 },
+    { label: '$10 to $20', max: 20 },
+    { label: '$20 to $35', max: 35 },
+    { label: '$35 to $50', max: 50 },
     { label: 'All Prices', max: 2000 },
   ];
 
@@ -55,7 +54,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       <div className="flex items-center justify-between pb-3 border-b border-gray-100">
         <div className="flex items-center gap-1.5 font-bold text-gray-900">
           <Filter className="w-4 h-4 text-purple-600" />
-          <span>Filter 84+ Catalog</span>
+          <span>Filter ({allProducts.length} Items)</span>
         </div>
         <button
           onClick={onResetFilters}

@@ -5,7 +5,7 @@ import { HeroSlider } from './components/HeroSlider';
 import { FeatureGrid } from './components/FeatureGrid';
 import { ProductCard } from './components/ProductCard';
 import { FilterSidebar } from './components/FilterSidebar';
-import { QuickViewModal } from './components/QuickViewModal';
+import { ProductDetailPage } from './components/ProductDetailPage';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { AiTagStudioModal } from './components/AiTagStudioModal';
@@ -18,8 +18,9 @@ import { Footer } from './components/Footer';
 
 import { INITIAL_PRODUCTS } from './data/products';
 import { Product, CartItem, FilterState, OrderItem, CurrencyCode } from './types';
-import { checkBackendHealth, fetchAllModelTags } from './services/api';
-import { SlidersHorizontal, ArrowUpDown, X, Tag } from 'lucide-react';
+import { checkBackendHealth, fetchAllProducts } from './services/api';
+import { convertBackendProduct } from './utils/productConverter';
+import { SlidersHorizontal, ArrowUpDown, X, Tag, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
 export const App: React.FC = () => {
   // State: Products & Cart
@@ -54,8 +55,11 @@ export const App: React.FC = () => {
 
   // Backend Integration State
   const [backendOnline, setBackendOnline] = useState(false);
-  const [totalTags, setTotalTags] = useState(439);
+  const [totalTags, setTotalTags] = useState(0);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 32;
 
   // Promo Code State
   const [appliedPromoCode, setAppliedPromoCode] = useState('');
@@ -86,17 +90,30 @@ export const App: React.FC = () => {
     sortBy: 'featured',
   });
 
-  // Check Backend Connection on Mount
+  // Check Backend Connection & Load 3,939 Products on Mount
   useEffect(() => {
     const initBackend = async () => {
-      const health = await checkBackendHealth();
-      if (health && health.models_loaded) {
-        setBackendOnline(true);
-        setTotalTags(health.total_classes);
-      }
-      const tags = await fetchAllModelTags();
-      if (tags.length > 0) {
-        setAvailableTags(tags);
+      setLoadingProducts(true);
+      try {
+        const health = await checkBackendHealth();
+        if (health && health.data_loaded) {
+          setBackendOnline(true);
+          setTotalTags(health.total_products);
+
+          const rawProducts = await fetchAllProducts();
+          if (rawProducts && rawProducts.length > 0) {
+            const converted = rawProducts.map(convertBackendProduct);
+            setProducts(converted);
+
+            const tagsSet = new Set<string>();
+            converted.forEach((p) => p.tags.forEach((t) => tagsSet.add(t)));
+            setAvailableTags(Array.from(tagsSet).slice(0, 40));
+          }
+        }
+      } catch (err) {
+        console.error('Error loading backend products:', err);
+      } finally {
+        setLoadingProducts(false);
       }
     };
     initBackend();
@@ -104,10 +121,12 @@ export const App: React.FC = () => {
 
   // Filter Updates
   const handleFilterChange = (updates: Partial<FilterState>) => {
+    setCurrentPage(1);
     setFilters((prev) => ({ ...prev, ...updates }));
   };
 
   const handleResetFilters = () => {
+    setCurrentPage(1);
     setFilters({
       searchQuery: '',
       category: 'All Departments',
@@ -265,6 +284,34 @@ export const App: React.FC = () => {
     });
   }, [products, filters]);
 
+  const totalPages = Math.ceil(filteredProducts.length / pageSize) || 1;
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredProducts.slice(start, start + pageSize);
+  }, [filteredProducts, currentPage, pageSize]);
+
+  const handleSelectStockCode = (stockCode: string) => {
+    const found = products.find((p) => p.stockCode === stockCode || p.id === stockCode);
+    if (found) {
+      setQuickViewProduct(found);
+    } else {
+      setQuickViewProduct(convertBackendProduct({ stock_code: stockCode, description: stockCode }));
+    }
+    // Scroll the detail page back to top
+    const pdp = document.getElementById('pdp-root');
+    if (pdp) pdp.scrollTop = 0;
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const elem = document.getElementById('product-grid-anchor');
+    if (elem) {
+      elem.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    }
+  };
+
   const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -332,12 +379,14 @@ export const App: React.FC = () => {
 
           {/* Right Product Grid & Controls */}
           <div className="flex-1 min-w-0">
+            <div id="product-grid-anchor" />
+
             {/* Results Header Bar */}
             <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm mb-4 space-y-2 text-xs">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500 font-medium">
-                    Showing <strong className="text-gray-900">{filteredProducts.length}</strong> of <strong className="text-purple-700">{products.length}</strong> products
+                    Showing <strong className="text-gray-900">{filteredProducts.length === 0 ? 0 : (currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredProducts.length)}</strong> of <strong className="text-purple-700">{filteredProducts.length}</strong> items {totalPages > 1 && <span className="text-gray-400 font-normal">· Page {currentPage} of {totalPages}</span>}
                   </span>
                   {filters.category !== 'All Departments' && (
                     <span className="bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded-full">
@@ -400,8 +449,16 @@ export const App: React.FC = () => {
               )}
             </div>
 
-            {/* Product Cards Grid */}
-            {filteredProducts.length === 0 ? (
+            {/* Product Cards Grid & Loading State */}
+            {loadingProducts ? (
+              <div className="bg-white rounded-2xl border border-gray-200 p-16 text-center space-y-4 shadow-sm">
+                <Loader2 className="w-10 h-10 text-purple-600 animate-spin mx-auto" />
+                <h3 className="text-base font-bold text-gray-900">Loading Product Catalogue...</h3>
+                <p className="text-xs text-gray-500 max-w-md mx-auto">
+                  Connecting to the FastAPI backend and loading 3,939 items from the recommendation models.
+                </p>
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center space-y-3">
                 <div className="w-16 h-16 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
                   <SlidersHorizontal className="w-8 h-8" />
@@ -420,39 +477,108 @@ export const App: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-                {filteredProducts.map((prod) => (
-                  <ProductCard
-                    key={prod.id}
-                    product={prod}
-                    onAddToCart={handleAddToCart}
-                    onQuickView={(p) => setQuickViewProduct(p)}
-                    onFilterByTag={(tag) => {
-                      if (!filters.selectedTags.includes(tag)) {
-                        handleFilterChange({ selectedTags: [...filters.selectedTags, tag] });
-                      }
-                    }}
-                    isWishlisted={wishlist.some((w) => w.id === prod.id)}
-                    onToggleWishlist={handleToggleWishlist}
-                    isCompared={compareList.some((c) => c.id === prod.id)}
-                    onToggleCompare={handleToggleCompare}
-                    currency={currency}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+                  {paginatedProducts.map((prod) => (
+                    <ProductCard
+                      key={prod.id}
+                      product={prod}
+                      onAddToCart={handleAddToCart}
+                      onQuickView={(p) => setQuickViewProduct(p)}
+                      onFilterByTag={(tag) => {
+                        if (!filters.selectedTags.includes(tag)) {
+                          handleFilterChange({ selectedTags: [...filters.selectedTags, tag] });
+                        }
+                      }}
+                      isWishlisted={wishlist.some((w) => w.id === prod.id)}
+                      onToggleWishlist={handleToggleWishlist}
+                      isCompared={compareList.some((c) => c.id === prod.id)}
+                      onToggleCompare={handleToggleCompare}
+                      currency={currency}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-8 bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                    <div className="text-xs text-gray-500 font-medium">
+                      Showing <strong className="text-gray-900">{(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredProducts.length)}</strong> of <strong className="text-gray-900">{filteredProducts.length}</strong> products
+                    </div>
+
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage <= 1}
+                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1 cursor-pointer"
+                      >
+                        <ChevronLeft className="w-3.5 h-3.5" />
+                        <span>Prev</span>
+                      </button>
+
+                      {/* Page Numbers */}
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1)
+                          .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+                          .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                            if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) {
+                              acc.push('...');
+                            }
+                            acc.push(p);
+                            return acc;
+                          }, [])
+                          .map((item, idx) =>
+                            item === '...' ? (
+                              <span key={`dots-${idx}`} className="px-2 text-gray-400 text-xs font-bold">
+                                …
+                              </span>
+                            ) : (
+                              <button
+                                key={`page-${item}`}
+                                onClick={() => handlePageChange(item as number)}
+                                className={`w-8 h-8 rounded-lg text-xs font-bold transition cursor-pointer ${
+                                  currentPage === item
+                                    ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
+                                    : 'text-gray-700 hover:bg-gray-100'
+                                }`}
+                              >
+                                {item}
+                              </button>
+                            )
+                          )}
+                      </div>
+
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages}
+                        className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>Next</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
       </main>
 
       {/* Modals and Drawers */}
-      <QuickViewModal
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-        onAddToCart={handleAddToCart}
-        onBuyNow={handleBuyNow}
-        currency={currency}
-      />
+      {/* Full-screen Product Detail Page */}
+      {quickViewProduct && (
+        <ProductDetailPage
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+          onAddToCart={handleAddToCart}
+          onBuyNow={handleBuyNow}
+          onSelectProduct={handleSelectStockCode}
+          currency={currency}
+          isWishlisted={wishlist.some((w) => w.id === quickViewProduct.id)}
+          onToggleWishlist={handleToggleWishlist}
+        />
+      )}
 
       <CartDrawer
         isOpen={isCartOpen}

@@ -3247,13 +3247,14 @@ export const INITIAL_PRODUCTS: Product[] = [
 
 export const CATEGORIES = [
   "All Departments",
-  "Electronics",
-  "Lab & Medical",
-  "Home & Kitchen",
-  "Fashion & Apparel",
-  "Beauty & Skincare",
-  "Sports & Fitness",
-  "Office & Tech",
-  "Toys & Hobbies",
-  "Auto & Hardware"
+  "Home Décor",
+  "Candles & Lighting",
+  "Kitchen & Dining",
+  "Bags & Accessories",
+  "Storage & Organization",
+  "Party & Celebrations",
+  "Seasonal & Christmas",
+  "Garden & Outdoors",
+  "Stationery & Craft",
+  "Textiles & Comfort"
 ];

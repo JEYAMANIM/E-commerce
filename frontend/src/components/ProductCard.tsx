@@ -101,6 +101,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           src={product.image}
           alt={product.title}
           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+          onError={(e) => {
+            const img = e.currentTarget;
+            if (!img.dataset.fallback) {
+              img.dataset.fallback = '1';
+              const seed = (product.stockCode || product.id || 'item').replace(/[^a-z0-9]/gi, '').toLowerCase();
+              img.src = `https://picsum.photos/seed/${seed}/600/600`;
+            }
+          }}
         />
 
         {/* Deal Countdown Floating Pill */}
@@ -116,20 +124,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             e.stopPropagation();
             onQuickView(product);
           }}
-          className="absolute bottom-2 inset-x-4 bg-white/90 hover:bg-white text-gray-800 text-xs font-bold py-1.5 px-3 rounded-lg shadow-md backdrop-blur-sm opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center gap-1.5"
+          className="absolute bottom-2 inset-x-4 bg-white/95 hover:bg-white text-purple-900 text-xs font-bold py-2 px-3 rounded-lg shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center gap-1.5 border border-purple-100"
         >
-          <Eye className="w-3.5 h-3.5" />
-          <span>Quick View</span>
+          <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
+          <span>Quick View &amp; Recommendations</span>
         </button>
       </div>
 
       {/* Product Information */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
-          {/* Category */}
-          <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider block mb-1">
-            {product.category}
-          </span>
+          {/* Category & StockCode */}
+          <div className="flex items-center justify-between gap-1 mb-1">
+            <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider block">
+              {product.category}
+            </span>
+            {product.stockCode && (
+              <span className="text-[10px] font-mono text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded font-bold">
+                #{product.stockCode}
+              </span>
+            )}
+          </div>
 
           {/* Title */}
           <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 hover:text-purple-600 transition mb-1.5">

@@ -11,6 +11,7 @@ export interface ProductReview {
 
 export interface Product {
   id: string;
+  stockCode?: string;  // Real StockCode from backend (products_df.pkl index)
   title: string;
   category: string;
   price: number;

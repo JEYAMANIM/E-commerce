@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { X, Star, Check, ShoppingCart, Zap, ShieldCheck, Truck, RotateCcw, ThumbsUp } from 'lucide-react';
 import { Product, CurrencyCode } from '../types';
 import { formatPrice } from '../utils/format';
+import { RecommendationsSection } from './RecommendationsSection';
+import { getFallbackImage } from '../utils/productImages';
 
 interface QuickViewModalProps {
   product: Product | null;
   onClose: () => void;
   onAddToCart: (product: Product, selectedCoupon?: boolean, quantity?: number) => void;
   onBuyNow: (product: Product, selectedCoupon?: boolean, quantity?: number) => void;
+  onSelectStockCode?: (stockCode: string) => void;
   currency: CurrencyCode;
 }
 
@@ -16,6 +19,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
   onClose,
   onAddToCart,
   onBuyNow,
+  onSelectStockCode,
   currency,
 }) => {
   if (!product) return null;
@@ -92,6 +96,13 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
               src={product.image}
               alt={product.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                const img = e.currentTarget;
+                if (!img.dataset.fallback) {
+                  img.dataset.fallback = '1';
+                  img.src = getFallbackImage(product.stockCode || product.id);
+                }
+              }}
             />
           </div>
 
@@ -316,6 +327,39 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
               </div>
             )}
           </div>
+
+          {/* Backend Recommendations */}
+          {product.stockCode && (
+            <RecommendationsSection
+              stockCode={product.stockCode}
+              topN={8}
+              onSelectProduct={onSelectStockCode}
+              onAddToCart={(rec) => {
+                // Convert backend recommendation to a minimal Product for the cart
+                const recProduct: Product = {
+                  id: rec.stock_code,
+                  stockCode: rec.stock_code,
+                  title: rec.description
+                    .toLowerCase()
+                    .replace(/\b\w/g, (c) => c.toUpperCase()),
+                  category: 'Home & Décor',
+                  price: 9.99,
+                  originalPrice: 12.99,
+                  rating: 4.6,
+                  reviewCount: 42,
+                  image: rec.image,
+                  inStock: true,
+                  stockCount: 50,
+                  hasPrime: true,
+                  tags: ['recommended', 'vintage'],
+                  description: rec.description,
+                  features: ['UK retail catalogue authentic item', 'Customer favourite matching aesthetic'],
+                  specs: { 'Catalogue Code': rec.stock_code },
+                };
+                onAddToCart(recProduct, false, 1);
+              }}
+            />
+          )}
 
           {/* Quantity & Actions */}
           <div className="pt-3 border-t border-gray-100 space-y-3">

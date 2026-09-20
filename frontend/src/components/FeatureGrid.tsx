@@ -15,24 +15,24 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
   onSelectProduct,
   onOpenAiStudio,
 }) => {
-  const labProducts = products.filter((p) => p.category === 'Lab & Medical').slice(0, 4);
-  const elecProducts = products.filter((p) => p.category === 'Electronics').slice(0, 4);
-  const wearProducts = products.filter((p) => p.category === 'Sports & Fitness' || p.tags.includes('smartwatch')).slice(0, 4);
+  const homeProducts = products.filter((p) => p.category === 'Home Décor').slice(0, 4);
+  const candleProducts = products.filter((p) => p.category === 'Candles & Lighting').slice(0, 4);
+  const kitchenProducts = products.filter((p) => p.category === 'Kitchen & Dining').slice(0, 4);
 
   return (
     <div className="relative -mt-20 sm:-mt-28 md:-mt-32 z-20 max-w-[1550px] mx-auto px-2 sm:px-4 mb-8">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Lab Tech */}
+        {/* Card 1: Home Décor */}
         <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-4 flex flex-col justify-between transition group">
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-gray-900 text-base leading-tight">
-                Lab &amp; Clinical Diagnostics
+                Home &amp; Hanging Décor
               </h3>
-              <Activity className="w-4 h-4 text-purple-600" />
+              <Sparkles className="w-4 h-4 text-purple-600" />
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
-              {labProducts.map((prod) => (
+              {(homeProducts.length > 0 ? homeProducts : products.slice(0, 4)).map((prod) => (
                 <div
                   key={prod.id}
                   onClick={() => onSelectProduct(prod)}
@@ -56,25 +56,25 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
             </div>
           </div>
           <button
-            onClick={() => onSelectCategory('Lab & Medical')}
+            onClick={() => onSelectCategory('Home Décor')}
             className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 pt-2 border-t border-gray-100 transition cursor-pointer"
           >
-            <span>See more in Lab &amp; Medical</span>
+            <span>Explore Home Décor</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
           </button>
         </div>
 
-        {/* Card 2: Electronics */}
+        {/* Card 2: Candles & Lighting */}
         <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-4 flex flex-col justify-between transition group">
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-gray-900 text-base leading-tight">
-                High-Performance Electronics
+                Candles &amp; Lighting
               </h3>
-              <Cpu className="w-4 h-4 text-indigo-600" />
+              <Zap className="w-4 h-4 text-amber-500" />
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
-              {elecProducts.map((prod) => (
+              {(candleProducts.length > 0 ? candleProducts : products.slice(4, 8)).map((prod) => (
                 <div
                   key={prod.id}
                   onClick={() => onSelectProduct(prod)}
@@ -98,25 +98,25 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
             </div>
           </div>
           <button
-            onClick={() => onSelectCategory('Electronics')}
+            onClick={() => onSelectCategory('Candles & Lighting')}
             className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 pt-2 border-t border-gray-100 transition cursor-pointer"
           >
-            <span>Explore all Electronics</span>
+            <span>Explore Candles &amp; Lanterns</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
           </button>
         </div>
 
-        {/* Card 3: Biometrics & Wearables */}
+        {/* Card 3: Kitchen & Dining */}
         <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-4 flex flex-col justify-between transition group">
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-gray-900 text-base leading-tight">
-                Biometric Wearables &amp; Health
+                Kitchen, Mugs &amp; Baking
               </h3>
-              <HeartPulse className="w-4 h-4 text-rose-500" />
+              <Activity className="w-4 h-4 text-rose-500" />
             </div>
             <div className="grid grid-cols-2 gap-2 mb-3">
-              {wearProducts.map((prod) => (
+              {(kitchenProducts.length > 0 ? kitchenProducts : products.slice(8, 12)).map((prod) => (
                 <div
                   key={prod.id}
                   onClick={() => onSelectProduct(prod)}
@@ -140,15 +140,15 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
             </div>
           </div>
           <button
-            onClick={() => onSelectCategory('Sports & Fitness')}
+            onClick={() => onSelectCategory('Kitchen & Dining')}
             className="text-xs font-bold text-rose-600 hover:text-rose-800 flex items-center gap-1 pt-2 border-t border-gray-100 transition cursor-pointer"
           >
-            <span>Shop Wearables &amp; Fitness</span>
+            <span>Shop Kitchen &amp; Dining</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
           </button>
         </div>
 
-        {/* Card 4: Pathi Labs AI Classifier Feature */}
+        {/* Card 4: Machine Learning Recommendation Engine */}
         <div className="bg-gradient-to-br from-[#1e1b4b] via-[#1e293b] to-[#0f172a] text-white rounded-xl shadow-md hover:shadow-xl border border-purple-500/30 p-4 flex flex-col justify-between transition group">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -157,40 +157,42 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
               </span>
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-400 block">
-                  ML Powered
+                  ML Recommender
                 </span>
                 <h3 className="font-bold text-white text-base leading-tight">
-                  AI Tag Classifier
+                  Hybrid Engine Live
                 </h3>
               </div>
             </div>
 
             <p className="text-xs text-gray-300 mt-2 mb-3 leading-relaxed">
-              Every item in Pathi Labs is automatically analyzed using our TF-IDF + KNN models across <strong>439 multi-label categories</strong>.
+              Serving real-time recommendations powered by cosine content similarity and collaborative customer co-purchase patterns across <strong>3,939 UK retail products</strong>.
             </p>
 
             <div className="bg-white/5 border border-white/10 rounded-lg p-2.5 mb-3 space-y-1.5">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-gray-400">TF-IDF Vocabulary:</span>
-                <span className="font-mono text-purple-300 font-bold">1,500 features</span>
+                <span className="text-gray-400">Total Products:</span>
+                <span className="font-mono text-purple-300 font-bold">3,939 items</span>
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-gray-400">Model Architecture:</span>
-                <span className="font-mono text-emerald-300 font-bold">KNN Multi-Label</span>
+                <span className="text-gray-400">Content Matrix:</span>
+                <span className="font-mono text-emerald-300 font-bold">3,939 × 3,939 (TF-IDF)</span>
               </div>
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-gray-400">Target Classes:</span>
-                <span className="font-mono text-amber-300 font-bold">439 Tags</span>
+                <span className="text-gray-400">Collab Matrix:</span>
+                <span className="font-mono text-amber-300 font-bold">3,939 × 3,939 (Cosine)</span>
               </div>
             </div>
           </div>
 
           <button
-            onClick={onOpenAiStudio}
+            onClick={() => {
+              if (products.length > 0) onSelectProduct(products[0]);
+            }}
             className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30 transition cursor-pointer"
           >
-            <Zap className="w-3.5 h-3.5 text-amber-300" />
-            <span>Launch AI Tag Studio</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Test Recommendation Engine</span>
           </button>
         </div>
       </div>

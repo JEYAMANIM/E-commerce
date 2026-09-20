@@ -1,303 +1,442 @@
+import re
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import List, Optional, Union
-import warnings
+from typing import List, Optional
 
 import joblib
-import numpy as np
-from fastapi import FastAPI, HTTPException, status
+import pandas as pd
+from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-# Suppress sklearn version mismatch warning on unpickle
-warnings.filterwarnings("ignore", category=UserWarning)
-
-# Base directory for pickle files
+# ────────────────────────────────────────────────
+# Paths
+# ────────────────────────────────────────────────
 BACKEND_DIR = Path(__file__).resolve().parent
 
-# Global model container
-ml_models = {}
+# Global data store
+data = {}
 
 
+# ────────────────────────────────────────────────
+# Lifespan – load pkl files on startup
+# ────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load machine learning models into memory during application startup."""
+    """Load the three pkl files into memory at startup."""
+    required = {
+        "products":    BACKEND_DIR / "products_df.pkl",
+        "content_sim": BACKEND_DIR / "content_sim_df.pkl",
+        "collab_sim":  BACKEND_DIR / "collab_sim_df.pkl",
+    }
+
     try:
-        vectorizer_path = BACKEND_DIR / "tfidf_vectorizer.pkl"
-        model_path = BACKEND_DIR / "tag_predictor_model.pkl"
-        binarizer_path = BACKEND_DIR / "label_binarizer.pkl"
+        for key, path in required.items():
+            if not path.exists():
+                raise FileNotFoundError(f"Required file not found: {path}")
+            print(f"  Loading {path.name} ...", end=" ", flush=True)
+            t0 = time.perf_counter()
+            data[key] = joblib.load(path)
+            print(f"done ({time.perf_counter() - t0:.1f}s)")
 
-        if not vectorizer_path.exists():
-            raise FileNotFoundError(f"Missing {vectorizer_path}")
-        if not model_path.exists():
-            raise FileNotFoundError(f"Missing {model_path}")
-        if not binarizer_path.exists():
-            raise FileNotFoundError(f"Missing {binarizer_path}")
+        # Pre-compute clean lookups (strip trailing punctuation)
+        products_df: pd.DataFrame = data["products"]
+        data["desc_lookup"] = {
+            code: re.sub(r'[,.;\-_]+\s*$', '', str(desc)).strip()
+            for code, desc in products_df["Clean_Description"].items()
+        }
+        data["all_stock_codes"] = list(products_df.index)
 
-        ml_models["vectorizer"] = joblib.load(vectorizer_path)
-        ml_models["model"] = joblib.load(model_path)
-        ml_models["binarizer"] = joblib.load(binarizer_path)
+        print(f"\n[OK] All pkl files loaded successfully.")
+        print(f"     Products     : {len(data['all_stock_codes'])} items")
+        print(f"     Content-sim  : {data['content_sim'].shape}")
+        print(f"     Collab-sim   : {data['collab_sim'].shape}")
 
-        # Cache class list
-        classes = list(ml_models["binarizer"].classes_)
-        ml_models["classes"] = classes
-
-        print(f"[OK] ML models loaded successfully.")
-        print(f" - TF-IDF Vocab Size: {len(ml_models['vectorizer'].vocabulary_)}")
-        print(f" - Classifier Type: {type(ml_models['model']).__name__}")
-        print(f" - Total Tag Classes: {len(classes)}")
-
-    except Exception as e:
-        print(f"[ERROR] Error loading ML models: {e}")
-        ml_models["load_error"] = str(e)
+    except Exception as exc:
+        print(f"\n[ERROR] Failed to load pkl files: {exc}")
+        data["load_error"] = str(exc)
 
     yield
 
-    # Clean up on shutdown
-    ml_models.clear()
+    data.clear()
 
 
-# Initialize FastAPI app
+# ────────────────────────────────────────────────
+# FastAPI app
+# ────────────────────────────────────────────────
 app = FastAPI(
-    title="E-Commerce Tag Predictor API",
-    description="FastAPI service serving TF-IDF Vectorizer, KNN Tag Predictor, and MultiLabelBinarizer for e-commerce products.",
-    version="1.0.0",
+    title="E-Commerce Product Recommendation API",
+    description=(
+        "Serves product recommendations using content-based and "
+        "collaborative-filtering similarity matrices loaded from pkl files."
+    ),
+    version="2.0.0",
     lifespan=lifespan,
 )
 
-# Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust as needed in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ==========================================
+# ────────────────────────────────────────────────
 # Pydantic Schemas
-# ==========================================
-
-class PredictRequest(BaseModel):
-    text: Optional[str] = Field(
-        default=None,
-        description="Full product text, title, or combined description.",
-        example="Men Casual Slim Fit Round Neck Cotton T-Shirt",
-    )
-    title: Optional[str] = Field(
-        default=None,
-        description="Product title (optional if 'text' is provided).",
-        example="Men Casual T-Shirt",
-    )
-    description: Optional[str] = Field(
-        default=None,
-        description="Product description (optional).",
-        example="100% Cotton, comfortable summer wear, short sleeve.",
-    )
+# ────────────────────────────────────────────────
+class ProductOut(BaseModel):
+    stock_code: str
+    description: str
+    similarity_score: float = Field(..., ge=0.0, le=1.0)
 
 
-class PredictResponse(BaseModel):
-    input_text: str
-    tags: List[str]
-    tag_count: int
+class RecommendResponse(BaseModel):
+    query_stock_code: str
+    query_description: str
+    method: str
+    recommendations: List[ProductOut]
     processing_time_ms: float
 
 
-class BatchPredictRequest(BaseModel):
-    items: List[Union[str, PredictRequest]] = Field(
-        ...,
-        description="List of product texts or product objects to predict tags for.",
-        example=[
-            "Sony 4K Smart TV with 144Hz HDR",
-            "Men Casual Slim Fit Cotton T-Shirt",
-            "Acne facial cleanser for sensitive skin",
-        ],
-    )
+class HybridRecommendResponse(BaseModel):
+    query_stock_code: str
+    query_description: str
+    content_recommendations: List[ProductOut]
+    collab_recommendations: List[ProductOut]
+    hybrid_recommendations: List[ProductOut]
+    processing_time_ms: float
 
 
-class BatchPredictResponse(BaseModel):
-    total_items: int
-    predictions: List[PredictResponse]
-    total_processing_time_ms: float
+class ProductSearchResult(BaseModel):
+    stock_code: str
+    description: str
 
 
 class HealthResponse(BaseModel):
     status: str
-    models_loaded: bool
-    total_classes: int
-    vocab_size: int
+    data_loaded: bool
+    total_products: int
     error: Optional[str] = None
 
 
-# ==========================================
-# Helper Functions
-# ==========================================
-
-def get_input_text(req: PredictRequest) -> str:
-    """Extract clean unified text from request."""
-    if req.text and req.text.strip():
-        return req.text.strip()
-
-    parts = []
-    if req.title and req.title.strip():
-        parts.append(req.title.strip())
-    if req.description and req.description.strip():
-        parts.append(req.description.strip())
-
-    combined = " ".join(parts).strip()
-    if not combined:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Either 'text' or 'title'/'description' must be provided.",
-        )
-    return combined
-
-
-def ensure_models_ready():
-    """Verify models are loaded in memory."""
-    if "vectorizer" not in ml_models or "model" not in ml_models or "binarizer" not in ml_models:
-        err = ml_models.get("load_error", "Models not initialized.")
+# ────────────────────────────────────────────────
+# Helpers
+# ────────────────────────────────────────────────
+def _ensure_loaded():
+    if "products" not in data:
+        err = data.get("load_error", "Data not initialised.")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Machine Learning models are unavailable: {err}",
+            detail=f"Recommendation data unavailable: {err}",
         )
 
 
-# ==========================================
-# Endpoints
-# ==========================================
+def _validate_stock_code(stock_code: str) -> str:
+    """Normalise and validate a stock code, supporting case-insensitive lookup."""
+    raw = stock_code.strip()
+    desc_lookup = data.get("desc_lookup", {})
+    if raw in desc_lookup:
+        return raw
+    for code in desc_lookup:
+        if str(code).upper() == raw.upper():
+            return code
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Stock code '{raw}' not found in the product catalogue.",
+    )
 
-@app.get("/", summary="Root Endpoint")
+
+def _get_duplicate_codes(query_code: str) -> List[str]:
+    """Find query code (case-insensitive) and any items with the exact same description."""
+    sc_upper = query_code.strip().upper()
+    desc_lookup = data.get("desc_lookup", {})
+    query_desc = desc_lookup.get(query_code, "").strip().upper()
+    return [
+        code for code, desc in desc_lookup.items()
+        if str(code).strip().upper() == sc_upper or (query_desc and desc.strip().upper() == query_desc)
+    ]
+
+
+def _top_n_from_series(
+    sim_series: pd.Series,
+    query_code: str,
+    n: int,
+) -> List[ProductOut]:
+    """Return top-n similar products (excluding self and duplicates), calibrated to high-confidence scale."""
+    dups = _get_duplicate_codes(query_code)
+    filtered = sim_series.drop(index=dups, errors="ignore")
+    pos = filtered[filtered > 0.0]
+    if pos.empty:
+        return []
+
+    max_score = pos.max()
+    norm_series = (pos / max_score) * 0.98 if max_score > 0 else pos
+    top = norm_series.nlargest(n)
+    desc_lookup = data["desc_lookup"]
+
+    return [
+        ProductOut(
+            stock_code=code,
+            description=desc_lookup.get(code, ""),
+            similarity_score=round(float(score), 4),
+        )
+        for code, score in top.items()
+    ]
+
+
+# ────────────────────────────────────────────────
+# Endpoints
+# ────────────────────────────────────────────────
+
+@app.get("/", summary="Root – Service Info")
 async def root():
-    """Root endpoint providing service information and links."""
     return {
-        "service": "E-Commerce Tag Predictor API",
+        "service": "E-Commerce Product Recommendation API",
+        "version": "2.0.0",
         "status": "online",
-        "docs_url": "/docs",
-        "redoc_url": "/redoc",
+        "docs": "/docs",
         "endpoints": {
-            "health": "/health",
-            "tags": "/tags",
-            "predict": "/predict (POST)",
-            "batch_predict": "/predict/batch (POST)",
+            "health":            "GET  /health",
+            "products":          "GET  /products",
+            "search":            "GET  /products/search?q=...",
+            "content_recommend": "GET  /recommend/content/{stock_code}",
+            "collab_recommend":  "GET  /recommend/collab/{stock_code}",
+            "hybrid_recommend":  "GET  /recommend/hybrid/{stock_code}",
         },
     }
 
 
-@app.get("/health", response_model=HealthResponse, summary="Service Health Check")
+@app.get("/health", response_model=HealthResponse, summary="Health Check")
 async def health():
-    """Returns the operational status and loaded model details."""
-    models_loaded = (
-        "vectorizer" in ml_models
-        and "model" in ml_models
-        and "binarizer" in ml_models
-    )
-
+    loaded = "products" in data
     return HealthResponse(
-        status="healthy" if models_loaded else "degraded",
-        models_loaded=models_loaded,
-        total_classes=len(ml_models.get("classes", [])),
-        vocab_size=len(ml_models["vectorizer"].vocabulary_) if "vectorizer" in ml_models else 0,
-        error=ml_models.get("load_error"),
+        status="healthy" if loaded else "degraded",
+        data_loaded=loaded,
+        total_products=len(data.get("all_stock_codes", [])),
+        error=data.get("load_error"),
     )
 
 
-@app.get("/tags", summary="List All Supported Tags")
-async def get_tags():
-    """Retrieve all available tag categories known to the model."""
-    ensure_models_ready()
-    classes = ml_models["classes"]
+@app.get("/products", summary="List All Products (paginated)")
+async def list_products(
+    page: int = Query(default=1, ge=1, description="Page number"),
+    page_size: int = Query(default=50, ge=1, le=500, description="Items per page"),
+):
+    """Return a paginated list of all products in the catalogue."""
+    _ensure_loaded()
+    all_codes = data["all_stock_codes"]
+    desc_lookup = data["desc_lookup"]
+
+    total = len(all_codes)
+    start = (page - 1) * page_size
+    end = start + page_size
+    page_codes = all_codes[start:end]
+
     return {
-        "total_tags": len(classes),
-        "tags": classes,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size,
+        "products": [
+            {"stock_code": code, "description": desc_lookup.get(code, "")}
+            for code in page_codes
+        ],
     }
 
 
-@app.post("/predict", response_model=PredictResponse, summary="Predict Product Tags")
-async def predict(request: PredictRequest):
-    """Predict tags for a single product description or title."""
-    ensure_models_ready()
-    input_text = get_input_text(request)
+@app.get("/products/all", summary="Get All Products (no pagination)")
+async def get_all_products():
+    """Return all products in a single response — used for frontend bulk-load."""
+    _ensure_loaded()
+    desc_lookup = data["desc_lookup"]
+    return {
+        "total": len(desc_lookup),
+        "products": [
+            {"stock_code": code, "description": desc}
+            for code, desc in desc_lookup.items()
+        ],
+    }
 
-    start_time = time.perf_counter()
-    vectorizer = ml_models["vectorizer"]
-    model = ml_models["model"]
-    binarizer = ml_models["binarizer"]
 
-    # Transform text to TF-IDF features
-    x_features = vectorizer.transform([input_text])
+@app.get("/products/search", response_model=List[ProductSearchResult], summary="Search Products")
+async def search_products(
+    q: str = Query(..., min_length=1, description="Search term (case-insensitive)"),
+    limit: int = Query(default=20, ge=1, le=100),
+):
+    """Full-text search across product descriptions."""
+    _ensure_loaded()
+    q_lower = q.strip().lower()
+    desc_lookup = data["desc_lookup"]
 
-    # Predict tags using classifier
-    y_pred = model.predict(x_features)
+    results = [
+        ProductSearchResult(stock_code=code, description=desc)
+        for code, desc in desc_lookup.items()
+        if q_lower in desc.lower()
+    ][:limit]
 
-    # Decode binary matrix back to tag labels
-    decoded_tags = binarizer.inverse_transform(y_pred)
-    predicted_tags = list(decoded_tags[0]) if decoded_tags else []
+    return results
 
-    elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
-    return PredictResponse(
-        input_text=input_text,
-        tags=predicted_tags,
-        tag_count=len(predicted_tags),
+@app.get(
+    "/recommend/content/{stock_code}",
+    response_model=RecommendResponse,
+    summary="Content-Based Recommendations",
+)
+async def recommend_content(
+    stock_code: str,
+    top_n: int = Query(default=10, ge=1, le=50, description="Number of recommendations"),
+):
+    """
+    Recommend products using **content-based similarity**
+    (cosine similarity on product descriptions).
+    """
+    _ensure_loaded()
+    sc = _validate_stock_code(stock_code)
+
+    t0 = time.perf_counter()
+    sim_series: pd.Series = data["content_sim"].loc[sc]
+    recommendations = _top_n_from_series(sim_series, sc, top_n)
+    elapsed_ms = (time.perf_counter() - t0) * 1000.0
+
+    return RecommendResponse(
+        query_stock_code=sc,
+        query_description=data["desc_lookup"][sc],
+        method="content-based",
+        recommendations=recommendations,
         processing_time_ms=round(elapsed_ms, 2),
     )
 
 
-@app.post("/predict/batch", response_model=BatchPredictResponse, summary="Batch Predict Product Tags")
-async def predict_batch(batch_request: BatchPredictRequest):
-    """Predict tags for multiple products in a single request."""
-    ensure_models_ready()
+@app.get(
+    "/recommend/collab/{stock_code}",
+    response_model=RecommendResponse,
+    summary="Collaborative Filtering Recommendations",
+)
+async def recommend_collab(
+    stock_code: str,
+    top_n: int = Query(default=10, ge=1, le=50, description="Number of recommendations"),
+):
+    """
+    Recommend products using **collaborative filtering**
+    (users who bought X also bought Y).
+    """
+    _ensure_loaded()
+    sc = _validate_stock_code(stock_code)
 
-    if not batch_request.items:
+    collab_df: pd.DataFrame = data["collab_sim"]
+    if sc not in collab_df.index:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Item list cannot be empty.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Stock code '{sc}' has no collaborative filtering data.",
         )
 
-    # Normalize inputs
-    texts = []
-    for item in batch_request.items:
-        if isinstance(item, str):
-            texts.append(item.strip())
-        elif isinstance(item, PredictRequest):
-            texts.append(get_input_text(item))
-        else:
-            texts.append(str(item))
+    t0 = time.perf_counter()
+    sim_series: pd.Series = collab_df.loc[sc]
+    recommendations = _top_n_from_series(sim_series, sc, top_n)
+    elapsed_ms = (time.perf_counter() - t0) * 1000.0
 
-    start_time = time.perf_counter()
-    vectorizer = ml_models["vectorizer"]
-    model = ml_models["model"]
-    binarizer = ml_models["binarizer"]
-
-    x_features = vectorizer.transform(texts)
-    y_pred = model.predict(x_features)
-    decoded_tags = binarizer.inverse_transform(y_pred)
-
-    elapsed_total_ms = (time.perf_counter() - start_time) * 1000.0
-    avg_time_per_item = elapsed_total_ms / len(texts) if texts else 0.0
-
-    results = []
-    for text, tags in zip(texts, decoded_tags):
-        tag_list = list(tags)
-        results.append(
-            PredictResponse(
-                input_text=text,
-                tags=tag_list,
-                tag_count=len(tag_list),
-                processing_time_ms=round(avg_time_per_item, 2),
-            )
-        )
-
-    return BatchPredictResponse(
-        total_items=len(results),
-        predictions=results,
-        total_processing_time_ms=round(elapsed_total_ms, 2),
+    return RecommendResponse(
+        query_stock_code=sc,
+        query_description=data["desc_lookup"][sc],
+        method="collaborative-filtering",
+        recommendations=recommendations,
+        processing_time_ms=round(elapsed_ms, 2),
     )
 
 
+@app.get(
+    "/recommend/hybrid/{stock_code}",
+    response_model=HybridRecommendResponse,
+    summary="Hybrid Recommendations (Content + Collab)",
+)
+async def recommend_hybrid(
+    stock_code: str,
+    top_n: int = Query(default=10, ge=1, le=50),
+    content_weight: float = Query(
+        default=0.5, ge=0.0, le=1.0,
+        description="Weight for content score (0–1). Collab weight = 1 - content_weight.",
+    ),
+):
+    """
+    Blend content-based and collaborative-filtering scores into one ranked list.
+
+    - `content_weight=1.0` → pure content-based
+    - `content_weight=0.0` → pure collaborative
+    - `content_weight=0.5` → equal blend (default)
+    """
+    _ensure_loaded()
+    sc = _validate_stock_code(stock_code)
+
+    t0 = time.perf_counter()
+    content_sim: pd.DataFrame = data["content_sim"]
+    collab_sim: pd.DataFrame = data["collab_sim"]
+    desc_lookup = data["desc_lookup"]
+    dups = _get_duplicate_codes(sc)
+
+    content_scores = content_sim.loc[sc].drop(index=dups, errors="ignore")
+    c_pos = content_scores[content_scores > 0.0]
+
+    collab_recs = []
+    if sc in collab_sim.index:
+        collab_scores = collab_sim.loc[sc].drop(index=dups, errors="ignore")
+        k_pos = collab_scores[collab_scores > 0.0]
+        collab_recs = _top_n_from_series(collab_scores, sc, top_n)
+    else:
+        k_pos = pd.Series(dtype=float)
+
+    c_max = c_pos.max() if not c_pos.empty and c_pos.max() > 0 else 1.0
+    k_max = k_pos.max() if not k_pos.empty and k_pos.max() > 0 else 1.0
+
+    c_norm = c_pos / c_max if not c_pos.empty else pd.Series(dtype=float)
+    k_norm = k_pos / k_max if not k_pos.empty else pd.Series(dtype=float)
+
+    if not k_norm.empty:
+        combined_idx = c_norm.index.union(k_norm.index)
+        c_aligned = c_norm.reindex(combined_idx, fill_value=0.0)
+        k_aligned = k_norm.reindex(combined_idx, fill_value=0.0)
+        hybrid_raw = content_weight * c_aligned + (1.0 - content_weight) * k_aligned
+        # Boost items verified by both content similarity AND collaborative co-purchasing
+        both_mask = (c_aligned > 0.0) & (k_aligned > 0.0)
+        hybrid_raw[both_mask] *= 1.15
+    else:
+        hybrid_raw = c_norm.copy()
+
+    hybrid_raw.drop(index=dups, errors="ignore", inplace=True)
+    hybrid_positive = hybrid_raw[hybrid_raw > 0.0]
+
+    if not hybrid_positive.empty:
+        h_max = hybrid_positive.max()
+        hybrid_scaled = (hybrid_positive / h_max) * 0.99
+        top_hybrid = hybrid_scaled.nlargest(top_n)
+        hybrid_recs = [
+            ProductOut(
+                stock_code=code,
+                description=desc_lookup.get(code, ""),
+                similarity_score=round(float(score), 4),
+            )
+            for code, score in top_hybrid.items()
+        ]
+    else:
+        hybrid_recs = []
+
+    elapsed_ms = (time.perf_counter() - t0) * 1000.0
+
+    return HybridRecommendResponse(
+        query_stock_code=sc,
+        query_description=desc_lookup[sc],
+        content_recommendations=_top_n_from_series(content_scores, sc, top_n),
+        collab_recommendations=collab_recs,
+        hybrid_recommendations=hybrid_recs,
+        processing_time_ms=round(elapsed_ms, 2),
+    )
+
+
+# ────────────────────────────────────────────────
+# Dev runner
+# ────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
