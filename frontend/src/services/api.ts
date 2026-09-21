@@ -56,7 +56,7 @@ export { getProductImage, getFallbackImage } from '../utils/productImages';
 
 // ── API helpers ─────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, timeoutMs = 5000): Promise<T | null> {
+async function apiFetch<T>(path: string, timeoutMs = 8000): Promise<T | null> {
   try {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -118,11 +118,12 @@ export const fetchCollabRecommendations = async (
 
 export const fetchHybridRecommendations = async (
   stockCode: string,
-  topN = 8,
-  contentWeight = 0.5,
+  topN = 12,
+  contentWeight = 0.7,
 ): Promise<HybridRecommendResponse | null> =>
   apiFetch<HybridRecommendResponse>(
     `/recommend/hybrid/${encodeURIComponent(stockCode)}?top_n=${topN}&content_weight=${contentWeight}`,
+    15000,
   );
 
 // Legacy – kept so AiTagStudioModal still compiles

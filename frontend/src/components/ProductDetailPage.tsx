@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ArrowLeft, Star, ShoppingCart, Zap, ShieldCheck, Truck,
   RotateCcw, Check, Package, Tag, ChevronRight, Sparkles,
@@ -110,13 +110,19 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     if (el) el.scrollTop = 0;
   }, [product.id]);
 
+  // Cache the full API response so tab switches don't re-trigger HTTP calls
+  const cachedData = useRef<import('../services/api').HybridRecommendResponse | null>(null);
+
+  // Fetch recommendations when the product changes (not on tab change)
   useEffect(() => {
     if (!product.stockCode) return;
     setRecsLoading(true);
     setRecs([]);
-    fetchHybridRecommendations(product.stockCode, 10, 0.5).then((data) => {
+    cachedData.current = null;
+    fetchHybridRecommendations(product.stockCode, 12, 0.7).then((data) => {
       setRecsLoading(false);
       if (!data) return;
+      cachedData.current = data;
       const src =
         recTab === 'collab'
           ? data.collab_recommendations
@@ -130,7 +136,26 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         }))
       );
     });
-  }, [product.stockCode, recTab]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.stockCode]);
+
+  // When the user switches tabs, just re-filter the cached response
+  useEffect(() => {
+    const data = cachedData.current;
+    if (!data) return;
+    const src =
+      recTab === 'collab'
+        ? data.collab_recommendations
+        : recTab === 'content'
+        ? data.content_recommendations
+        : data.hybrid_recommendations;
+    setRecs(
+      src.map((r) => ({
+        ...r,
+        image: getProductImage(r.description, r.stock_code),
+      }))
+    );
+  }, [recTab]);
 
   const handleAdd = () => {
     onAddToCart(product, applyCoupon, quantity);
@@ -548,10 +573,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <Sparkles className="w-3.5 h-3.5" /> AI Recommendation Engine
               </div>
               <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900">
-                Customers Also Viewed & Bought
+                Similar Products You May Like
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Collaborative purchase patterns & content feature similarity
+                Matched by category, description similarity &amp; purchase patterns
               </p>
             </div>
 
