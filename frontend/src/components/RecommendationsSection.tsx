@@ -7,10 +7,16 @@ import {
   type BackendRecommendedProduct,
   type HybridRecommendResponse,
 } from '../services/api';
+import { getClientRecommendations } from '../utils/clientRecommend';
+import { type Product } from '../types';
 
 interface RecommendationsSectionProps {
   /** The stock code to fetch recommendations for (from products_df.pkl index) */
   stockCode: string;
+  /** The full Product object (for client-side fallback when backend is offline) */
+  queryProduct?: Product;
+  /** All products list (for client-side fallback) */
+  allProducts?: Product[];
   /** Called when user clicks "Add" on a recommendation */
   onAddToCart?: (item: BackendRecommendedProduct & { image: string }) => void;
   /** Called when user clicks a recommendation card to view it */
@@ -25,6 +31,8 @@ interface RecProduct extends BackendRecommendedProduct {
 
 export const RecommendationsSection: React.FC<RecommendationsSectionProps> = ({
   stockCode,
+  queryProduct,
+  allProducts = [],
   onAddToCart,
   onSelectProduct,
   topN = 8,
@@ -43,7 +51,20 @@ export const RecommendationsSection: React.FC<RecommendationsSectionProps> = ({
 
     fetchHybridRecommendations(stockCode, topN, 0.5).then((data) => {
       setLoading(false);
-      if (!data) return;
+      if (!data) {
+        // Backend unreachable — use client-side fallback
+        if (queryProduct && allProducts.length > 0) {
+          const clientRecs = getClientRecommendations(queryProduct, allProducts, topN);
+          setItems(
+            clientRecs.map((r) => ({
+              ...r,
+              image: getProductImage(r.description, r.stock_code),
+              imgError: false,
+            }))
+          );
+        }
+        return;
+      }
       cachedResponse.current = data;
 
       const source =

@@ -610,6 +610,7 @@ export const App: React.FC = () => {
       {quickViewProduct && (
         <ProductDetailPage
           product={quickViewProduct}
+          allProducts={products}
           onClose={() => setQuickViewProduct(null)}
           onAddToCart={handleAddToCart}
           onBuyNow={handleBuyNow}

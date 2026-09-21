@@ -9,9 +9,11 @@ import { formatPrice } from '../utils/format';
 import { getFallbackImage } from '../utils/productImages';
 import { fetchHybridRecommendations, getProductImage, type BackendRecommendedProduct } from '../services/api';
 import { convertBackendProduct } from '../utils/productConverter';
+import { getClientRecommendations } from '../utils/clientRecommend';
 
 interface ProductDetailPageProps {
   product: Product;
+  allProducts?: Product[]; // all products for client-side fallback recommendations
   onClose: () => void;
   onAddToCart: (product: Product, selectedCoupon?: boolean, quantity?: number) => void;
   onBuyNow: (product: Product, selectedCoupon?: boolean, quantity?: number) => void;
@@ -68,6 +70,7 @@ const SAMPLE_REVIEWS = [
 
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   product,
+  allProducts = [],
   onClose,
   onAddToCart,
   onBuyNow,
@@ -123,7 +126,19 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     cachedData.current = null;
     fetchHybridRecommendations(effectiveStockCode, 16, 0.7).then((data) => {
       setRecsLoading(false);
-      if (!data) return;
+      if (!data) {
+        // Backend unreachable (e.g. on mobile/production) — use client-side fallback
+        if (allProducts.length > 0) {
+          const clientRecs = getClientRecommendations(product, allProducts, 16);
+          setRecs(
+            clientRecs.map((r) => ({
+              ...r,
+              image: getProductImage(r.description, r.stock_code),
+            }))
+          );
+        }
+        return;
+      }
       cachedData.current = data;
       const src =
         recTab === 'collab'
