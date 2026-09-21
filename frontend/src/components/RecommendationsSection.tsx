@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Sparkles, ShoppingCart, ExternalLink, Loader2 } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Sparkles, ShoppingCart, Loader2 } from 'lucide-react';
 import {
   fetchHybridRecommendations,
   getProductImage,
   getFallbackImage,
   type BackendRecommendedProduct,
+  type HybridRecommendResponse,
 } from '../services/api';
 
 interface RecommendationsSectionProps {
@@ -31,15 +32,19 @@ export const RecommendationsSection: React.FC<RecommendationsSectionProps> = ({
   const [items, setItems] = useState<RecProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<'hybrid' | 'content' | 'collab'>('hybrid');
+  const cachedResponse = useRef<HybridRecommendResponse | null>(null);
 
+  // Fetch when stockCode changes - cache the full response
   useEffect(() => {
     if (!stockCode) return;
     setLoading(true);
     setItems([]);
+    cachedResponse.current = null;
 
     fetchHybridRecommendations(stockCode, topN, 0.5).then((data) => {
       setLoading(false);
       if (!data) return;
+      cachedResponse.current = data;
 
       const source =
         tab === 'collab'
@@ -56,7 +61,27 @@ export const RecommendationsSection: React.FC<RecommendationsSectionProps> = ({
         })),
       );
     });
-  }, [stockCode, topN, tab]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stockCode, topN]);
+
+  // When tab changes, re-filter from cache — no new HTTP call needed
+  useEffect(() => {
+    const data = cachedResponse.current;
+    if (!data) return;
+    const source =
+      tab === 'collab'
+        ? data.collab_recommendations
+        : tab === 'content'
+        ? data.content_recommendations
+        : data.hybrid_recommendations;
+    setItems(
+      source.map((r) => ({
+        ...r,
+        image: getProductImage(r.description, r.stock_code),
+        imgError: false,
+      })),
+    );
+  }, [tab]);
 
   if (!stockCode) return null;
 

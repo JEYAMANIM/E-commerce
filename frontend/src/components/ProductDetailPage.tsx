@@ -114,12 +114,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const cachedData = useRef<import('../services/api').HybridRecommendResponse | null>(null);
 
   // Fetch recommendations when the product changes (not on tab change)
+  // Use both product.id and product.stockCode so effect fires on every product switch
+  const effectiveStockCode = product.stockCode || product.id;
   useEffect(() => {
-    if (!product.stockCode) return;
+    if (!effectiveStockCode) return;
     setRecsLoading(true);
     setRecs([]);
     cachedData.current = null;
-    fetchHybridRecommendations(product.stockCode, 12, 0.7).then((data) => {
+    fetchHybridRecommendations(effectiveStockCode, 16, 0.7).then((data) => {
       setRecsLoading(false);
       if (!data) return;
       cachedData.current = data;
@@ -137,7 +139,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       );
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product.stockCode]);
+  }, [product.id, product.stockCode]);
 
   // When the user switches tabs, just re-filter the cached response
   useEffect(() => {
@@ -573,10 +575,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <Sparkles className="w-3.5 h-3.5" /> AI Recommendation Engine
               </div>
               <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900">
-                Similar Products You May Like
+                {recs.length > 0
+                  ? `More Like This${product.category ? ` · ${product.category}` : ''}`
+                  : 'Similar Products You May Like'}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Matched by category, description similarity &amp; purchase patterns
+                Matched by category similarity, description keywords &amp; purchase patterns · {recs.length > 0 ? `${recs.length} related items found` : 'Calculating...'}
               </p>
             </div>
 

@@ -291,11 +291,26 @@ export const App: React.FC = () => {
   }, [filteredProducts, currentPage, pageSize]);
 
   const handleSelectStockCode = (stockCode: string) => {
-    const found = products.find((p) => p.stockCode === stockCode || p.id === stockCode);
+    // Case-insensitive lookup first
+    const scLower = stockCode.trim().toLowerCase();
+    const found = products.find(
+      (p) =>
+        (p.stockCode || '').toLowerCase() === scLower ||
+        p.id.toLowerCase() === scLower
+    );
     if (found) {
       setQuickViewProduct(found);
     } else {
-      setQuickViewProduct(convertBackendProduct({ stock_code: stockCode, description: stockCode }));
+      // Not in local list — create a placeholder and try to enrich from backend
+      const placeholder = convertBackendProduct({ stock_code: stockCode, description: stockCode });
+      setQuickViewProduct(placeholder);
+      // Try to look up real description from backend products already loaded
+      const backendMatch = products.find(
+        (p) => (p.stockCode || '').replace(/\s/g, '').toLowerCase() === scLower.replace(/\s/g, '')
+      );
+      if (backendMatch) {
+        setQuickViewProduct(backendMatch);
+      }
     }
     // Scroll the detail page back to top
     const pdp = document.getElementById('pdp-root');
