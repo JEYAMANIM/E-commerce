@@ -83,37 +83,85 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Amazon-Style Header Navigation Bar */}
-      <div className="max-w-[1550px] mx-auto px-2 sm:px-4 py-2 flex items-center gap-2 sm:gap-4">
-        {/* Pathi Labs Brand Logo */}
-        <div 
-          onClick={() => {
-            onCategoryChange('All Departments');
-            onSearchChange('');
-          }}
-          className="flex items-center gap-2 group cursor-pointer py-1 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 transition"
-        >
-          <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-white/5 border border-purple-500/30 flex items-center justify-center shadow-lg group-hover:shadow-purple-500/40 transition">
-            <img 
-              src="/logo.jpg" 
-              alt="Pathi Labs Logo" 
-              className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-            />
+      <div className="w-full max-w-[1550px] mx-auto px-2 sm:px-4 py-2 flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+        {/* Top row on mobile: Logo + Mobile Actions */}
+        <div className="flex items-center justify-between w-full sm:w-auto flex-shrink-0 gap-2">
+          {/* Pathi Labs Brand Logo */}
+          <div 
+            onClick={() => {
+              onCategoryChange('All Departments');
+              onSearchChange('');
+            }}
+            className="flex items-center gap-2 group cursor-pointer py-1 px-1 sm:px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 transition"
+            role="button"
+            tabIndex={0}
+            aria-label="Pathi Labs Home"
+          >
+            <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden bg-white/5 border border-purple-500/30 flex items-center justify-center shadow-lg group-hover:shadow-purple-500/40 transition flex-shrink-0">
+              <img 
+                src="/logo.jpg" 
+                alt="Pathi Labs Logo" 
+                width="40"
+                height="40"
+                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-base sm:text-xl tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-100 to-purple-400">
+                Pathi<span className="text-purple-400 font-black">Labs</span>
+              </span>
+              <span className="text-[8px] sm:text-[9px] uppercase tracking-widest text-purple-300/80 font-bold -mt-0.5">
+                Marketplace
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-lg sm:text-xl tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-100 to-purple-400">
-              Pathi<span className="text-purple-400 font-black">Labs</span>
-            </span>
-            <span className="text-[9px] uppercase tracking-widest text-purple-300/80 font-bold -mt-0.5">
-              Marketplace
-            </span>
+
+          {/* Mobile Right Controls: Currency + Wishlist + Cart (visible on xs, hidden on desktop where they appear in line) */}
+          <div className="flex sm:hidden items-center gap-1.5">
+            {/* Currency Button Mobile */}
+            <button
+              onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
+              className="py-1 px-1.5 rounded text-xs font-bold text-white bg-slate-800/80 border border-slate-700 flex items-center gap-1"
+              aria-label={`Current currency ${currency}`}
+            >
+              <span>{currency}</span>
+              <ChevronDown className="w-3 h-3 text-gray-400" />
+            </button>
+
+            {/* Wishlist Mobile */}
+            <button
+              onClick={onOpenWishlist}
+              className="p-1.5 text-gray-300 hover:text-rose-400 relative"
+              aria-label={`Saved Wishlist ${wishlistCount} items`}
+            >
+              <Heart className="w-5 h-5" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-rose-500 text-white font-bold text-[9px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+
+            {/* Cart Mobile */}
+            <button 
+              onClick={onOpenCart}
+              className="p-1 text-white relative flex items-center"
+              aria-label={`Shopping cart with ${cartCount} items`}
+            >
+              <ShoppingCart className="w-6 h-6" />
+              <span className="absolute -top-1.5 -right-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold text-[10px] min-w-[18px] h-4.5 rounded-full flex items-center justify-center px-1 shadow border border-[#0f172a]">
+                {cartCount}
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* Deliver To Selector */}
+        {/* Deliver To Selector (Hidden on Mobile) */}
         <button 
           onClick={onOpenLocation}
-          className="hidden md:flex items-center gap-1.5 py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 text-left transition group cursor-pointer"
+          className="hidden md:flex items-center gap-1.5 py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 text-left transition group cursor-pointer flex-shrink-0"
           title="Change delivery location"
+          aria-label={`Deliver to ${currentCity} ${currentZip}`}
         >
           <MapPin className="w-5 h-5 text-purple-400 group-hover:text-purple-300 mt-1 flex-shrink-0" />
           <div className="text-xs leading-tight">
@@ -124,16 +172,20 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </button>
 
-        {/* Omnibar Search Box */}
-        <div className="flex-1 relative">
-          <div className={`flex items-center bg-white rounded-lg overflow-hidden transition-all duration-200 ${
-            isSearchFocused ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-[#0f172a]' : ''
-          }`}>
-            {/* Category Dropdown */}
-            <div className="relative bg-gray-100 border-r border-gray-300 hover:bg-gray-200 transition">
+        {/* Omnibar Search Box: Full width on mobile, flexible on desktop */}
+        <div className="w-full sm:flex-1 relative order-3 sm:order-none min-w-0">
+          <form 
+            onSubmit={(e) => { e.preventDefault(); }}
+            className={`flex items-center bg-white rounded-lg overflow-hidden transition-all duration-200 ${
+              isSearchFocused ? 'ring-2 ring-purple-500 ring-offset-2 ring-offset-[#0f172a]' : ''
+            }`}
+          >
+            {/* Category Dropdown (Hidden on very small screens to give search bar full width) */}
+            <div className="hidden md:block relative bg-gray-100 border-r border-gray-300 hover:bg-gray-200 transition flex-shrink-0">
               <select
                 value={selectedCategory}
                 onChange={(e) => onCategoryChange(e.target.value)}
+                aria-label="Filter catalog by category"
                 className="appearance-none bg-transparent text-xs text-gray-700 py-2.5 pl-3 pr-7 font-medium cursor-pointer focus:outline-none"
               >
                 {CATEGORIES.map((cat) => (
@@ -146,20 +198,23 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Input */}
-            <div className="flex-1 relative flex items-center">
+            <div className="flex-1 relative flex items-center min-w-0">
               <input
-                type="text"
-                placeholder="Search 84+ Pathi Labs products (4k, microscope, headphones, sneakers, serum, tools...)"
+                type="search"
+                aria-label="Search catalog products"
+                placeholder="Search 84+ products (candles, mugs, hearts...)"
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none"
+                className="w-full px-3 py-2 text-xs sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none min-w-0"
               />
               {searchQuery && (
                 <button 
+                  type="button"
                   onClick={() => onSearchChange('')}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 cursor-pointer"
+                  aria-label="Clear search query"
+                  className="p-1.5 text-gray-400 hover:text-gray-700 cursor-pointer flex-shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -168,16 +223,17 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Search Button */}
             <button 
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-5 py-2.5 flex items-center justify-center transition cursor-pointer"
-              aria-label="Search"
+              type="submit"
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-4 sm:px-5 py-2.5 flex items-center justify-center transition cursor-pointer flex-shrink-0"
+              aria-label="Submit search"
             >
-              <Search className="w-5 h-5 text-white" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </button>
-          </div>
+          </form>
 
           {/* Autocomplete Dropdown */}
           {isSearchFocused && !searchQuery && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-2xl border border-gray-200 py-2 z-50 text-gray-800">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-2xl border border-gray-200 py-2 z-50 text-gray-800 max-h-60 overflow-y-auto">
               <div className="px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">
                 Trending Searches in 84+ Catalog
               </div>
@@ -195,139 +251,148 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        {/* Currency Selector Dropdown */}
-        <div 
-          className="relative py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 cursor-pointer transition"
-          onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-        >
-          <div className="flex items-center gap-1">
-            <span className="text-xs font-bold text-white">{currency}</span>
-            <span className="text-xs text-purple-300 font-mono">({CURRENCIES[currency].symbol})</span>
-            <ChevronDown className="w-3 h-3 text-gray-400" />
-          </div>
-
-          {showCurrencyDropdown && (
-            <div 
-              className="absolute right-0 top-full mt-1 w-36 bg-white text-gray-900 rounded-lg shadow-2xl border border-gray-200 py-1.5 z-50 animate-fadeIn"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {(Object.keys(CURRENCIES) as CurrencyCode[]).map((c) => (
-                <button
-                  key={c}
-                  onClick={() => {
-                    onCurrencyChange(c);
-                    setShowCurrencyDropdown(false);
-                  }}
-                  className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between transition cursor-pointer ${
-                    currency === c ? 'bg-purple-50 text-purple-700 font-bold' : 'hover:bg-gray-50'
-                  }`}
-                >
-                  <span>{c} ({CURRENCIES[c].symbol})</span>
-                  {currency === c && <span className="text-purple-600 font-bold">&bull;</span>}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Wishlist Button with Badge */}
-        <button
-          onClick={onOpenWishlist}
-          className="hidden sm:flex items-center gap-1 py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 cursor-pointer transition relative"
-          title="View Wishlist"
-        >
-          <Heart className="w-5 h-5 text-gray-300 hover:text-rose-400" />
-          {wishlistCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-rose-500 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
-              {wishlistCount}
-            </span>
-          )}
-        </button>
-
-        {/* Compare Button with Badge */}
-        {compareCount > 0 && (
-          <button
-            onClick={onOpenCompare}
-            className="flex items-center gap-1 py-1.5 px-2 rounded-md bg-purple-600/40 hover:bg-purple-600 text-white cursor-pointer transition relative text-xs font-bold"
-            title="Compare Products"
+        {/* Desktop Controls (Hidden on Mobile) */}
+        <div className="hidden sm:flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          {/* Currency Selector Dropdown */}
+          <div 
+            className="relative py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 cursor-pointer transition"
+            onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
+            role="button"
+            tabIndex={0}
+            aria-label="Select Currency"
           >
-            <Scale className="w-4 h-4" />
-            <span>Compare ({compareCount})</span>
-          </button>
-        )}
-
-        {/* Account & Lists */}
-        <div 
-          className="relative py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 cursor-pointer transition"
-          onMouseEnter={() => setShowAccountDropdown(true)}
-          onMouseLeave={() => setShowAccountDropdown(false)}
-        >
-          <div className="text-xs leading-tight">
-            <span className="text-gray-300 block text-[11px]">Hello, Sign in</span>
-            <span className="font-bold text-white text-xs flex items-center gap-1">
-              Account &amp; Lists
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-bold text-white">{currency}</span>
+              <span className="text-xs text-purple-300 font-mono">({CURRENCIES[currency].symbol})</span>
               <ChevronDown className="w-3 h-3 text-gray-400" />
-            </span>
-          </div>
-
-          {/* Hover Menu */}
-          {showAccountDropdown && (
-            <div className="absolute right-0 top-full mt-1 w-64 bg-white text-gray-900 rounded-lg shadow-2xl border border-gray-200 p-4 z-50 animate-fadeIn">
-              <div className="text-center pb-3 border-b border-gray-100">
-                <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-md text-xs shadow transition cursor-pointer">
-                  Sign In
-                </button>
-                <p className="text-[11px] text-gray-500 mt-2">
-                  New customer? <span className="text-purple-600 font-semibold hover:underline">Start here.</span>
-                </p>
-              </div>
-              <div className="pt-3 grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <h4 className="font-bold text-gray-800 mb-2">Your Lists</h4>
-                  <ul className="space-y-1.5 text-gray-600 text-[11px]">
-                    <li onClick={onOpenWishlist} className="hover:text-purple-600 cursor-pointer">Saved Wishlist ({wishlistCount})</li>
-                    <li className="hover:text-purple-600 cursor-pointer">Lab Re-orders</li>
-                    <li className="hover:text-purple-600 cursor-pointer">Gift Registry</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-800 mb-2">Your Account</h4>
-                  <ul className="space-y-1.5 text-gray-600 text-[11px]">
-                    <li onClick={onOpenOrders} className="hover:text-purple-600 cursor-pointer">Your Orders</li>
-                    <li className="hover:text-purple-600 cursor-pointer">Pathi Prime</li>
-                    <li className="hover:text-purple-600 cursor-pointer">Help Center</li>
-                  </ul>
-                </div>
-              </div>
             </div>
-          )}
-        </div>
 
-        {/* Returns & Orders */}
-        <button 
-          onClick={onOpenOrders}
-          className="hidden sm:block py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 text-left cursor-pointer transition"
-        >
-          <span className="text-gray-300 block text-[11px]">Returns</span>
-          <span className="font-bold text-white text-xs block">&amp; Orders</span>
-        </button>
-
-        {/* Cart Button with Counter */}
-        <button 
-          onClick={onOpenCart}
-          className="flex items-center gap-1 py-1 px-2.5 rounded-md hover:outline hover:outline-1 hover:outline-white/40 transition group relative cursor-pointer"
-          aria-label="Shopping Cart"
-        >
-          <div className="relative">
-            <ShoppingCart className="w-8 h-8 text-white group-hover:text-purple-300 transition" />
-            <span className="absolute -top-1.5 -right-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold text-[11px] min-w-[20px] h-5 rounded-full flex items-center justify-center px-1 shadow-md border-2 border-[#0f172a] transform group-hover:scale-110 transition">
-              {cartCount}
-            </span>
+            {showCurrencyDropdown && (
+              <div 
+                className="absolute right-0 top-full mt-1 w-36 bg-white text-gray-900 rounded-lg shadow-2xl border border-gray-200 py-1.5 z-50 animate-fadeIn"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {(Object.keys(CURRENCIES) as CurrencyCode[]).map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => {
+                      onCurrencyChange(c);
+                      setShowCurrencyDropdown(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between transition cursor-pointer ${
+                      currency === c ? 'bg-purple-50 text-purple-700 font-bold' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <span>{c} ({CURRENCIES[c].symbol})</span>
+                    {currency === c && <span className="text-purple-600 font-bold">&bull;</span>}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <span className="hidden md:inline font-bold text-sm text-white mt-2">
-            Cart
-          </span>
-        </button>
+
+          {/* Wishlist Button with Badge */}
+          <button
+            onClick={onOpenWishlist}
+            className="flex items-center gap-1 py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 cursor-pointer transition relative"
+            title="View Wishlist"
+            aria-label={`View Wishlist, ${wishlistCount} items`}
+          >
+            <Heart className="w-5 h-5 text-gray-300 hover:text-rose-400" />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-rose-500 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                {wishlistCount}
+              </span>
+            )}
+          </button>
+
+          {/* Compare Button with Badge */}
+          {compareCount > 0 && (
+            <button
+              onClick={onOpenCompare}
+              className="flex items-center gap-1 py-1.5 px-2 rounded-md bg-purple-600/40 hover:bg-purple-600 text-white cursor-pointer transition relative text-xs font-bold"
+              title="Compare Products"
+              aria-label={`Compare ${compareCount} Products`}
+            >
+              <Scale className="w-4 h-4" />
+              <span>Compare ({compareCount})</span>
+            </button>
+          )}
+
+          {/* Account & Lists */}
+          <div 
+            className="relative py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 cursor-pointer transition"
+            onMouseEnter={() => setShowAccountDropdown(true)}
+            onMouseLeave={() => setShowAccountDropdown(false)}
+          >
+            <div className="text-xs leading-tight">
+              <span className="text-gray-300 block text-[11px]">Hello, Sign in</span>
+              <span className="font-bold text-white text-xs flex items-center gap-1">
+                Account &amp; Lists
+                <ChevronDown className="w-3 h-3 text-gray-400" />
+              </span>
+            </div>
+
+            {/* Hover Menu */}
+            {showAccountDropdown && (
+              <div className="absolute right-0 top-full mt-1 w-64 bg-white text-gray-900 rounded-lg shadow-2xl border border-gray-200 p-4 z-50 animate-fadeIn">
+                <div className="text-center pb-3 border-b border-gray-100">
+                  <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-md text-xs shadow transition cursor-pointer">
+                    Sign In
+                  </button>
+                  <p className="text-[11px] text-gray-500 mt-2">
+                    New customer? <span className="text-purple-600 font-semibold hover:underline">Start here.</span>
+                  </p>
+                </div>
+                <div className="pt-3 grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <h4 className="font-bold text-gray-800 mb-2">Your Lists</h4>
+                    <ul className="space-y-1.5 text-gray-600 text-[11px]">
+                      <li onClick={onOpenWishlist} className="hover:text-purple-600 cursor-pointer">Saved Wishlist ({wishlistCount})</li>
+                      <li className="hover:text-purple-600 cursor-pointer">Lab Re-orders</li>
+                      <li className="hover:text-purple-600 cursor-pointer">Gift Registry</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-800 mb-2">Your Account</h4>
+                    <ul className="space-y-1.5 text-gray-600 text-[11px]">
+                      <li onClick={onOpenOrders} className="hover:text-purple-600 cursor-pointer">Your Orders</li>
+                      <li className="hover:text-purple-600 cursor-pointer">Pathi Prime</li>
+                      <li className="hover:text-purple-600 cursor-pointer">Help Center</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Returns & Orders */}
+          <button 
+            onClick={onOpenOrders}
+            className="hidden md:block py-1.5 px-2 rounded-md hover:outline hover:outline-1 hover:outline-white/40 text-left cursor-pointer transition"
+            aria-label="View Returns & Orders"
+          >
+            <span className="text-gray-300 block text-[11px]">Returns</span>
+            <span className="font-bold text-white text-xs block">&amp; Orders</span>
+          </button>
+
+          {/* Cart Button with Counter */}
+          <button 
+            onClick={onOpenCart}
+            className="flex items-center gap-1 py-1 px-2.5 rounded-md hover:outline hover:outline-1 hover:outline-white/40 transition group relative cursor-pointer"
+            aria-label={`Shopping cart with ${cartCount} items`}
+          >
+            <div className="relative">
+              <ShoppingCart className="w-8 h-8 text-white group-hover:text-purple-300 transition" />
+              <span className="absolute -top-1.5 -right-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold text-[11px] min-w-[20px] h-5 rounded-full flex items-center justify-center px-1 shadow-md border-2 border-[#0f172a] transform group-hover:scale-110 transition">
+                {cartCount}
+              </span>
+            </div>
+            <span className="hidden lg:inline font-bold text-sm text-white mt-2">
+              Cart
+            </span>
+          </button>
+        </div>
       </div>
     </header>
   );

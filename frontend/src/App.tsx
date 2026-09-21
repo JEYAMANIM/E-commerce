@@ -75,6 +75,7 @@ export const App: React.FC = () => {
   const [isDeptDrawerOpen, setIsDeptDrawerOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   // Filters
   const [filters, setFilters] = useState<FilterState>({
@@ -381,8 +382,26 @@ export const App: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 max-w-[1550px] w-full mx-auto px-2 sm:px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Filter Sidebar */}
-          <div className="w-full lg:w-64 flex-shrink-0">
+          {/* Mobile Filter Toggle Button */}
+          <div className="lg:hidden flex items-center justify-between bg-white rounded-xl border border-gray-200 p-3 shadow-sm">
+            <button
+              onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+              className="flex items-center gap-2 text-xs font-bold text-gray-800 bg-purple-50 hover:bg-purple-100 text-purple-700 py-2 px-3.5 rounded-lg border border-purple-200 transition cursor-pointer"
+              aria-label="Toggle Filters"
+            >
+              <SlidersHorizontal className="w-4 h-4 text-purple-600" />
+              <span>{isMobileFilterOpen ? 'Hide Filters' : 'Filter Products'}</span>
+              {(filters.category !== 'All Departments' || filters.selectedTags.length > 0 || filters.primeOnly || filters.hasDiscountOnly) && (
+                <span className="w-2 h-2 rounded-full bg-purple-600 animate-pulse" />
+              )}
+            </button>
+            <span className="text-xs text-gray-500 font-medium">
+              <strong className="text-purple-700">{filteredProducts.length}</strong> items found
+            </span>
+          </div>
+
+          {/* Left Filter Sidebar (visible always on lg, conditionally toggled on mobile) */}
+          <div className={`w-full lg:w-64 flex-shrink-0 ${isMobileFilterOpen ? 'block' : 'hidden lg:block'}`}>
             <FilterSidebar
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -417,14 +436,16 @@ export const App: React.FC = () => {
 
                 {/* Sort By Dropdown */}
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-500 font-semibold flex items-center gap-1">
+                  <label htmlFor="sort-by-select" className="text-gray-500 font-semibold flex items-center gap-1 cursor-pointer">
                     <ArrowUpDown className="w-3.5 h-3.5" />
                     <span>Sort by:</span>
-                  </span>
+                  </label>
                   <select
+                    id="sort-by-select"
                     value={filters.sortBy}
+                    aria-label="Sort products by"
                     onChange={(e) => handleFilterChange({ sortBy: e.target.value as any })}
-                    className="border border-gray-300 rounded-lg px-2.5 py-1.5 bg-gray-50 font-semibold text-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-600 cursor-pointer"
+                    className="border border-gray-300 rounded-lg px-2.5 py-1.5 bg-gray-50 font-semibold text-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-600 cursor-pointer text-xs"
                   >
                     <option value="featured">Featured Picks</option>
                     <option value="price-low">Price: Low to High</option>
@@ -525,6 +546,7 @@ export const App: React.FC = () => {
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage <= 1}
+                        aria-label="Previous Page"
                         className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1 cursor-pointer"
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
@@ -551,6 +573,8 @@ export const App: React.FC = () => {
                               <button
                                 key={`page-${item}`}
                                 onClick={() => handlePageChange(item as number)}
+                                aria-label={`Go to page ${item}`}
+                                aria-current={currentPage === item ? 'page' : undefined}
                                 className={`w-8 h-8 rounded-lg text-xs font-bold transition cursor-pointer ${
                                   currentPage === item
                                     ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
@@ -566,6 +590,7 @@ export const App: React.FC = () => {
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage >= totalPages}
+                        aria-label="Next Page"
                         className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-700 hover:bg-purple-50 hover:text-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1 cursor-pointer"
                       >
                         <span>Next</span>

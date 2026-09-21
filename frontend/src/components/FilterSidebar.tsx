@@ -131,6 +131,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
           max="2000"
           step="20"
           value={filters.maxPrice}
+          aria-label="Maximum price filter"
           onChange={(e) => onFilterChange({ maxPrice: Number(e.target.value) })}
           className="w-full accent-purple-600 cursor-pointer"
         />

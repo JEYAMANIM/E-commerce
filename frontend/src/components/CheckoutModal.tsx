@@ -120,43 +120,51 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
-                  <label className="text-[11px] font-semibold text-gray-600 block mb-1">Full Name</label>
+                  <label htmlFor="checkout-name" className="text-[11px] font-semibold text-gray-600 block mb-1">Full Name</label>
                   <input
+                    id="checkout-name"
                     type="text"
+                    autoComplete="name"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white"
+                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white text-gray-900"
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="text-[11px] font-semibold text-gray-600 block mb-1">Street Address</label>
+                  <label htmlFor="checkout-address" className="text-[11px] font-semibold text-gray-600 block mb-1">Street Address</label>
                   <input
+                    id="checkout-address"
                     type="text"
+                    autoComplete="street-address"
                     required
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white"
+                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-gray-600 block mb-1">City</label>
+                  <label htmlFor="checkout-city" className="text-[11px] font-semibold text-gray-600 block mb-1">City</label>
                   <input
+                    id="checkout-city"
                     type="text"
+                    autoComplete="address-level2"
                     required
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white"
+                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-gray-600 block mb-1">Postal / Zip Code</label>
+                  <label htmlFor="checkout-zip" className="text-[11px] font-semibold text-gray-600 block mb-1">Postal / Zip Code</label>
                   <input
+                    id="checkout-zip"
                     type="text"
+                    autoComplete="postal-code"
                     required
                     value={zip}
                     onChange={(e) => setZip(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white"
+                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-purple-600 focus:outline-none bg-white text-gray-900"
                   />
                 </div>
               </div>

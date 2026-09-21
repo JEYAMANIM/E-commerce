@@ -368,13 +368,15 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  aria-label="Decrease quantity"
                   className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold cursor-pointer"
                 >
                   -
                 </button>
-                <span className="px-4 py-1 text-xs font-bold text-gray-800">{quantity}</span>
+                <span className="px-4 py-1 text-xs font-bold text-gray-800" aria-label={`Current quantity ${quantity}`}>{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
+                  aria-label="Increase quantity"
                   className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold cursor-pointer"
                 >
                   +

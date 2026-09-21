@@ -170,40 +170,43 @@ export const AiTagStudioModal: React.FC<AiTagStudioModalProps> = ({
           {/* Form */}
           <div className="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
             <div>
-              <label className="text-xs font-bold text-gray-700 block mb-1">
+              <label htmlFor="ai-product-title" className="text-xs font-bold text-gray-700 block mb-1">
                 Product Title *
               </label>
               <input
+                id="ai-product-title"
                 type="text"
                 placeholder="e.g. Sony 4K OLED Gaming Monitor 144Hz HDR"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
+                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white text-gray-900"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-gray-700 block mb-1">
+              <label htmlFor="ai-product-desc" className="text-xs font-bold text-gray-700 block mb-1">
                 Product Description *
               </label>
               <textarea
+                id="ai-product-desc"
                 rows={2}
                 placeholder="Describe features, specs, intended usage..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white resize-none"
+                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white resize-none text-gray-900"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-gray-700 block mb-1">
+                <label htmlFor="ai-product-category" className="text-xs font-bold text-gray-700 block mb-1">
                   Department
                 </label>
                 <select
+                  id="ai-product-category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
+                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white text-gray-900"
                 >
                   <option>Electronics</option>
                   <option>Lab &amp; Medical</option>
@@ -213,14 +216,15 @@ export const AiTagStudioModal: React.FC<AiTagStudioModalProps> = ({
                 </select>
               </div>
               <div>
-                <label className="text-xs font-bold text-gray-700 block mb-1">
+                <label htmlFor="ai-product-price" className="text-xs font-bold text-gray-700 block mb-1">
                   Price ($)
                 </label>
                 <input
+                  id="ai-product-price"
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white"
+                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 bg-white text-gray-900"
                 />
               </div>
             </div>

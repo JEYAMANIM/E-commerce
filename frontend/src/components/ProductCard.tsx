@@ -118,16 +118,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Quick View Floating Button on Hover */}
+        {/* Quick View Floating Button on Hover & Mobile Visible */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onQuickView(product);
           }}
-          className="absolute bottom-2 inset-x-4 bg-white/95 hover:bg-white text-purple-900 text-xs font-bold py-2 px-3 rounded-lg shadow-lg backdrop-blur-sm opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center gap-1.5 border border-purple-100"
+          aria-label={`View details and recommendations for ${product.title}`}
+          className="absolute bottom-2 inset-x-2 sm:inset-x-4 bg-white/95 hover:bg-white text-purple-900 text-[11px] sm:text-xs font-bold py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg shadow-lg backdrop-blur-sm opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition duration-200 flex items-center justify-center gap-1 sm:gap-1.5 border border-purple-100"
         >
-          <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
-          <span>Quick View &amp; Recommendations</span>
+          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-600 animate-pulse flex-shrink-0" />
+          <span className="truncate">View Product</span>
         </button>
       </div>
 
@@ -262,6 +263,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Add to Cart Button */}
         <button
           onClick={handleAdd}
+          aria-label={`Add ${product.title} to cart`}
           className={`w-full py-2 px-3 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm ${
             isAdded
               ? 'bg-emerald-600 text-white'

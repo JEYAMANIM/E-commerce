@@ -20,8 +20,8 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
   const kitchenProducts = products.filter((p) => p.category === 'Kitchen & Dining').slice(0, 4);
 
   return (
-    <div className="relative -mt-20 sm:-mt-28 md:-mt-32 z-20 max-w-[1550px] mx-auto px-2 sm:px-4 mb-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="relative -mt-12 sm:-mt-24 md:-mt-32 z-20 max-w-[1550px] mx-auto px-2 sm:px-4 mb-6 sm:mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1: Home Décor */}
         <div className="bg-white rounded-xl shadow-md hover:shadow-xl border border-gray-100 p-4 flex flex-col justify-between transition group">
           <div>

@@ -79,21 +79,25 @@ export const DeliverToModal: React.FC<DeliverToModalProps> = ({
 
           <form onSubmit={handleSave} className="space-y-3 pt-2 border-t border-gray-100">
             <div>
-              <label className="font-semibold text-gray-700 block mb-1">City</label>
+              <label htmlFor="delivery-city" className="font-semibold text-gray-700 block mb-1">City</label>
               <input
+                id="delivery-city"
                 type="text"
+                autoComplete="address-level2"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-600 text-xs text-gray-900"
               />
             </div>
             <div>
-              <label className="font-semibold text-gray-700 block mb-1">Postal / Zip Code</label>
+              <label htmlFor="delivery-zip" className="font-semibold text-gray-700 block mb-1">Postal / Zip Code</label>
               <input
+                id="delivery-zip"
                 type="text"
+                autoComplete="postal-code"
                 value={zip}
                 onChange={(e) => setZip(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-600"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-600 text-xs text-gray-900"
               />
             </div>
 
