@@ -101,6 +101,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     };
   }, []);
 
+  // Cache refs — must be declared before effects that use them
+  const cachedData = useRef<import('../services/api').HybridRecommendResponse | null>(null);
+  const clientFallbackRecs = useRef<RecProduct[]>([]);
+
   useEffect(() => {
     setQuantity(1);
     setApplyCoupon(false);
@@ -109,12 +113,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     setActiveTab('overview');
     setRecTab('hybrid');
     setRecs([]);
+    clientFallbackRecs.current = []; // clear client cache on product change
     const el = document.getElementById('pdp-root');
     if (el) el.scrollTop = 0;
   }, [product.id]);
 
-  // Cache the full API response so tab switches don't re-trigger HTTP calls
-  const cachedData = useRef<import('../services/api').HybridRecommendResponse | null>(null);
 
   // Fetch recommendations when the product changes (not on tab change)
   // Use both product.id and product.stockCode so effect fires on every product switch
@@ -130,12 +133,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         // Backend unreachable (e.g. on mobile/production) — use client-side fallback
         if (allProducts.length > 0) {
           const clientRecs = getClientRecommendations(product, allProducts, 16);
-          setRecs(
-            clientRecs.map((r) => ({
-              ...r,
-              image: getProductImage(r.description, r.stock_code),
-            }))
-          );
+          const mapped = clientRecs.map((r) => ({
+            ...r,
+            image: getProductImage(r.description, r.stock_code),
+          }));
+          clientFallbackRecs.current = mapped; // cache so tab switches keep recs
+          setRecs(mapped);
         }
         return;
       }
@@ -156,10 +159,17 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product.id, product.stockCode]);
 
-  // When the user switches tabs, just re-filter the cached response
+  // When the user switches tabs, re-filter from backend cache OR keep client-side recs
   useEffect(() => {
     const data = cachedData.current;
-    if (!data) return;
+    if (!data) {
+      // In client-side fallback mode: tab switching has no backend to filter from,
+      // so just restore the cached client recs (they stay the same across tabs)
+      if (clientFallbackRecs.current.length > 0) {
+        setRecs(clientFallbackRecs.current);
+      }
+      return;
+    }
     const src =
       recTab === 'collab'
         ? data.collab_recommendations
@@ -261,7 +271,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       </header>
 
       {/* Main responsive container: auto adapts from mobile (<640px), tablet (640-1024px), desktop (1024-1536px), up to ultra-wide (2xl) */}
-      <main className="w-full max-w-7xl 2xl:max-w-[1536px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pb-28 lg:pb-12">
+      <main className="w-full max-w-7xl 2xl:max-w-[1536px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 pb-36 sm:pb-12 lg:pb-12">
 
         {/* Hero Product Section */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 lg:gap-10 mb-8 sm:mb-12">
