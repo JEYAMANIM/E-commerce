@@ -119,14 +119,57 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Mobile Right Controls: Currency + Wishlist + Cart (visible on xs, hidden on desktop where they appear in line) */}
           <div className="flex sm:hidden items-center gap-1.5">
             {/* Currency Button Mobile */}
-            <button
-              onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-              className="py-1 px-1.5 rounded text-xs font-bold text-white bg-slate-800/80 border border-slate-700 flex items-center gap-1"
-              aria-label={`Current currency ${currency}`}
-            >
-              <span>{currency}</span>
-              <ChevronDown className="w-3 h-3 text-gray-400" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
+                className="py-1 px-1.5 rounded text-xs font-bold text-white bg-slate-800/80 border border-slate-700 flex items-center gap-1"
+                aria-label={`Current currency ${currency}, tap to change`}
+                aria-expanded={showCurrencyDropdown}
+                aria-haspopup="listbox"
+              >
+                <span>{currency}</span>
+                <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Mobile Currency Dropdown Panel */}
+              {showCurrencyDropdown && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowCurrencyDropdown(false)}
+                  />
+                  <div
+                    className="absolute right-0 top-full mt-1.5 w-40 bg-white text-gray-900 rounded-xl shadow-2xl border border-gray-200 py-1.5 z-50"
+                    role="listbox"
+                    aria-label="Select currency"
+                  >
+                    <p className="px-3 pb-1 pt-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                      Select Currency
+                    </p>
+                    {(Object.keys(CURRENCIES) as CurrencyCode[]).map((c) => (
+                      <button
+                        key={c}
+                        role="option"
+                        aria-selected={currency === c}
+                        onClick={() => {
+                          onCurrencyChange(c);
+                          setShowCurrencyDropdown(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition cursor-pointer ${
+                          currency === c
+                            ? 'bg-purple-50 text-purple-700 font-bold'
+                            : 'hover:bg-gray-50 text-gray-700'
+                        }`}
+                      >
+                        <span>{c} ({CURRENCIES[c].symbol})</span>
+                        {currency === c && <span className="text-purple-600 font-bold">✓</span>}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Wishlist Mobile */}
             <button
