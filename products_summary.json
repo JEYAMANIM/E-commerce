@@ -1,0 +1,590 @@
+[
+  {
+    "idx": 1,
+    "id": "pl-flag-01",
+    "title": "Pathi Labs 4K Digital Compound Microscope with AI Cellular Imaging",
+    "category": "Lab & Medical",
+    "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 2,
+    "id": "pl-flag-02",
+    "title": "Pathi Labs BioPulse Pro Clinical Oximeter & Multi-Vital Continuous Scanner",
+    "category": "Lab & Medical",
+    "image": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 3,
+    "id": "pl-flag-03",
+    "title": "Pathi Vision 32-inch 4K OLED HDR 144Hz Gaming & Pro Creator Monitor",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 4,
+    "id": "pl-flag-04",
+    "title": "Pathi BioTrack Elite Smartwatch with Medical ECG & Titanium Frame",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 5,
+    "id": "pl-item-000",
+    "title": "Pathi Pro Ionic Salon Hair Dryer with Diffuser & Concentrator Nozzle",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 6,
+    "id": "pl-item-001",
+    "title": "Pathi Summer Woven Straw Sun Hat - Wide Brim UV Protection",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1521369909029-2afed882baee?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 7,
+    "id": "pl-item-002",
+    "title": "Vintage Brass Nautical Telescope with Adjustable Wooden Tripod",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 8,
+    "id": "pl-item-003",
+    "title": "Men's Waterproof Packable Windbreaker Jacket with Taped Seams",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 9,
+    "id": "pl-item-004",
+    "title": "Dual-Sided Eco Leather Desk Mat & Large Gaming Mousepad",
+    "category": "Office & Tech",
+    "image": "https://images.unsplash.com/photo-1616353071588-708dcff912e2?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 10,
+    "id": "pl-item-005",
+    "title": "Industrial Brass Pendant Ceiling Light Fixture with E26 Base",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 11,
+    "id": "pl-item-006",
+    "title": "100% Pure Mongolian Cashmere Ribbed Winter Scarf",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 12,
+    "id": "pl-item-007",
+    "title": "Microfiber Feather Duster with 100-Inch Telescoping Extension Pole",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 13,
+    "id": "pl-item-008",
+    "title": "Ultra 4K Dual-Screen Waterproof Action Camera with EIS Stabilization",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 14,
+    "id": "pl-item-009",
+    "title": "Classic Solid Wood Building Blocks Educational Toy Set (100-Piece)",
+    "category": "Toys & Hobbies",
+    "image": "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 15,
+    "id": "pl-item-010",
+    "title": "Ergonomic Dual-Mode Wireless Optical Mouse with Silent Clicks",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 16,
+    "id": "pl-item-011",
+    "title": "Pure Vitamin C 20% + Ferulic Acid Anti-Aging Brightening Serum",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 17,
+    "id": "pl-item-012",
+    "title": "Rechargeable Cordless Electric Wine Opener with Foil Cutter",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 18,
+    "id": "pl-item-013",
+    "title": "Ultrasonic Ceramic Essential Oil Diffuser with Ambient LED Glow",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 19,
+    "id": "pl-item-014",
+    "title": "Handheld High-Torque Electric Milk Frother & Coffee Drink Mixer",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 20,
+    "id": "pl-item-015",
+    "title": "4K Ultra HD Smart TV Streaming Hub with Voice Remote & Dolby Vision",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 21,
+    "id": "pl-item-016",
+    "title": "High-Density EVA Muscle Foam Roller for Physical Therapy & Yoga",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 22,
+    "id": "pl-item-017",
+    "title": "Ultralight Carbon Fiber Shock-Absorbing Trekking Poles (Pair)",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 23,
+    "id": "pl-item-018",
+    "title": "Breathable Mesh Cushion Athletic Road Running Sneakers",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 24,
+    "id": "pl-item-019",
+    "title": "Modern Brass Pedestal Bedside Table Lamp with Textured Linen Shade",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 25,
+    "id": "pl-item-020",
+    "title": "Velvet Matte Long-Wear Liquid Lipstick Cosmetics Gift Kit (6-Pack)",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 26,
+    "id": "pl-item-021",
+    "title": "Full-Grain Leather Executive Travel & Laptop Commuter Backpack",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 27,
+    "id": "pl-item-022",
+    "title": "MagSafe Compatible Magnetic Wireless Power Bank 10,000mAh",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 28,
+    "id": "pl-item-023",
+    "title": "Slim Minimalist Genuine Leather Wallet with RFID-Blocking Shield",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 29,
+    "id": "pl-item-024",
+    "title": "Architect LED Desk Lamp with Heavy-Duty Metal Clamp & Dimmer",
+    "category": "Office & Tech",
+    "image": "https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 30,
+    "id": "pl-item-025",
+    "title": "Italian Barista Pump Espresso Machine with Steam Milk Wand",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 31,
+    "id": "pl-item-026",
+    "title": "High-Density Acoustic Soundproofing Foam Studio Wedge Panels (12-Pack)",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 32,
+    "id": "pl-item-027",
+    "title": "Brushed Gold Solid Brass Bathroom Sink Faucet with Pop-Up Drain",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 33,
+    "id": "pl-item-028",
+    "title": "All-Terrain Waterproof Hiking Boots with Vibram Grip Outsole",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 34,
+    "id": "pl-item-029",
+    "title": "Cardioid Condenser USB Studio Microphone with Boom Arm & Pop Filter",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 35,
+    "id": "pl-item-030",
+    "title": "Smart Laser-Navigation Robot Vacuum & Mop Combo with Auto-Empty",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 36,
+    "id": "pl-item-031",
+    "title": "Rugged IPX7 Waterproof Outdoor Bluetooth Speaker with Deep Bass",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 37,
+    "id": "pl-item-032",
+    "title": "Vintage Industrial Brass Gooseneck Wall Sconce Light Fixture",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 38,
+    "id": "pl-item-033",
+    "title": "Men's 100% Pure Breathable Linen Casual Button-Down Summer Shirt",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 39,
+    "id": "pl-item-034",
+    "title": "Ultra-Low Latency Wireless Gaming Earbuds with Dual Microphones",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 40,
+    "id": "pl-item-035",
+    "title": "Rechargeable Digital Tire Inflator & 150 PSI Cordless Air Compressor",
+    "category": "Auto & Hardware",
+    "image": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 41,
+    "id": "pl-item-036",
+    "title": "65W GaN III Fast Multi-Port USB-C Wall Charger with Foldable Plug",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 42,
+    "id": "pl-item-037",
+    "title": "Oversized Quick-Dry Microfiber Beach, Gym & Camping Travel Towel",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 43,
+    "id": "pl-item-038",
+    "title": "Ultra-Soft Heavyweight Fleece Pullover Hoodie with Kangaroo Pocket",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 44,
+    "id": "pl-item-039",
+    "title": "Ergonomic Memory Foam Under-Desk Footrest with Non-Slip Base",
+    "category": "Office & Tech",
+    "image": "https://images.unsplash.com/photo-1580481077195-c990264169c8?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 45,
+    "id": "pl-item-040",
+    "title": "Organic Arabica Coffee & Coconut Oil Exfoliating Body Scrub",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 46,
+    "id": "pl-item-041",
+    "title": "Plush Micro-Fleece Heated Electric Blanket with 10 Heat Settings",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 47,
+    "id": "pl-item-042",
+    "title": "Dead Sea Mineral Purifying Mud Facial Mask for Pore Deep Cleansing",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 48,
+    "id": "pl-item-043",
+    "title": "Designer Genuine Pebbled Leather Crossbody Shoulder Handbag",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 49,
+    "id": "pl-item-044",
+    "title": "Moroccan Argan Oil Intensive Repair Deep Conditioning Hair Mask",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 50,
+    "id": "pl-item-045",
+    "title": "Hardcover Dotted Grid Bullet Journal Notebook with 160 GSM Thick Paper",
+    "category": "Office & Tech",
+    "image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 51,
+    "id": "pl-item-046",
+    "title": "UV400 Polarized Sport Cycling & Running Wrap Sunglasses",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 52,
+    "id": "pl-item-047",
+    "title": "Quick-Drying Fine Point 0.5mm Retractable Black Gel Pens (Pack of 12)",
+    "category": "Office & Tech",
+    "image": "https://images.unsplash.com/photo-1585336261026-7f093f4122d4?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 53,
+    "id": "pl-item-048",
+    "title": "Quick-Select Adjustable Dial Dumbbell Set (5 to 52.5 lbs Single)",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 54,
+    "id": "pl-item-049",
+    "title": "High-Precision Digital Kitchen Food Scale with Stainless Platform",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 55,
+    "id": "pl-item-050",
+    "title": "108-Piece Home Repair & Maintenance Hand Tool Kit with Hard Case",
+    "category": "Auto & Hardware",
+    "image": "https://images.unsplash.com/photo-1581147036324-c17ac41dfa6c?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 56,
+    "id": "pl-item-051",
+    "title": "Unisex Classic Low-Top Vulcanized Canvas Daily Walking Sneakers",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 57,
+    "id": "pl-item-052",
+    "title": "Double-Wall Vacuum Insulated Stainless Steel Water Bottle 32oz",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 58,
+    "id": "pl-item-053",
+    "title": "Triple Biomimetic Ceramides Daily Hydrating Facial Moisture Cream",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1608248597359-21669485b0d0?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 59,
+    "id": "pl-item-054",
+    "title": "Anti-Theft TSA-Approved Business Laptop Travel Backpack with USB Port",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 60,
+    "id": "pl-item-055",
+    "title": "Heavy-Duty Resistance Loop & Tube Exercise Bands with Door Anchor",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 61,
+    "id": "pl-item-056",
+    "title": "1000-Piece Panoramic Landscape Nature Jigsaw Puzzle for Adults",
+    "category": "Toys & Hobbies",
+    "image": "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 62,
+    "id": "pl-item-057",
+    "title": "Classic Vintage Trucker Denim Jean Jacket with Metal Shank Buttons",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 63,
+    "id": "pl-item-058",
+    "title": "Handcrafted Modern Geometric Ribbed Ceramic Flower Vase",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 64,
+    "id": "pl-item-059",
+    "title": "High-Density TPE Eco-Friendly Non-Slip Exercise Yoga Mat (6mm)",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 65,
+    "id": "pl-item-060",
+    "title": "Adjustable Silicone Ankle & Wrist Weights for Cardio & Pilates",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 66,
+    "id": "pl-item-061",
+    "title": "Heavy-Duty 500D PVC Waterproof Floating Dry Bag with Phone Pouch",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 67,
+    "id": "pl-item-062",
+    "title": "High-Waisted Squat-Proof Tummy Control Gym Compression Leggings",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 68,
+    "id": "pl-item-063",
+    "title": "Smart WiFi RGB Color-Changing LED Light Strip (32.8ft) Alexa Compatible",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 69,
+    "id": "pl-item-064",
+    "title": "14-inch OLED Ultra-Thin Laptop Computer - 16GB RAM, 512GB SSD",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 70,
+    "id": "pl-item-065",
+    "title": "Aromatherapeutic French Lavender & Vanilla Natural Soy Wax Candle",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1603006905003-be475563bc59?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 71,
+    "id": "pl-item-066",
+    "title": "Luxury Soft Velvet Decorative Throw Pillow Cushion Covers (Set of 2)",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 72,
+    "id": "pl-item-067",
+    "title": "All-Weather GPS Smartwatch with Heart Rate & Blood Oxygen Sensor",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 73,
+    "id": "pl-item-068",
+    "title": "Pre-Seasoned 10.25-inch Cast Iron Skillet with Silicone Handle Holder",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 74,
+    "id": "pl-item-069",
+    "title": "Thermal Fleece Lined Winter Compression Base Layer Top & Bottoms",
+    "category": "Fashion & Apparel",
+    "image": "https://images.unsplash.com/photo-1506152983158-b4a74a01c721?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 75,
+    "id": "pl-item-070",
+    "title": "Double-Wall Insulated Stainless Steel Food Jar Thermos with Spoon",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1543353071-873f17a7a088?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 76,
+    "id": "pl-item-071",
+    "title": "Civilization Strategy & Empire Building Tabletop Family Board Game",
+    "category": "Toys & Hobbies",
+    "image": "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 77,
+    "id": "pl-item-072",
+    "title": "10-inch Non-Stick Granite Ceramic Crepe, Omelet & Flatbread Pan",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 78,
+    "id": "pl-item-073",
+    "title": "Extended RGB Gaming Mousepad Desk Mat with Fast 10W Wireless Charger",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 79,
+    "id": "pl-item-074",
+    "title": "Ergonomic High-Back Breathable Mesh Office Chair with Dynamic Lumbar",
+    "category": "Office & Tech",
+    "image": "https://images.unsplash.com/photo-1580481077195-c990264169c8?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 80,
+    "id": "pl-item-075",
+    "title": "3-4 Person Instant Pop-Up Waterproof Windproof Camping Dome Tent",
+    "category": "Sports & Fitness",
+    "image": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 81,
+    "id": "pl-item-076",
+    "title": "Multi-Tier Metal Mesh Document Desk File Tray Organizer with Drawer",
+    "category": "Office & Tech",
+    "image": "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 82,
+    "id": "pl-item-077",
+    "title": "Smart True HEPA Air Purifier for Large Rooms with Air Quality Sensor",
+    "category": "Home & Kitchen",
+    "image": "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 83,
+    "id": "pl-item-078",
+    "title": "Hands-Free 360° Bladeless Wearable Rechargeable Cooling Neck Fan",
+    "category": "Electronics",
+    "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&auto=format&fit=crop&q=80"
+  },
+  {
+    "idx": 84,
+    "id": "pl-item-079",
+    "title": "Sonic Electric Rechargeable Toothbrush with 40,000 VPM & 8 Brush Heads",
+    "category": "Beauty & Skincare",
+    "image": "https://images.unsplash.com/photo-1559591937-e10c5980a30b?w=800&auto=format&fit=crop&q=80"
+  }
+]
