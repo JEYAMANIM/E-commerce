@@ -119,15 +119,25 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   }, [product.id]);
 
 
+  // Effective stock code for backend lookup
+  const effectiveStockCode = product.stockCode || product.id;
+
   // Fetch recommendations when the product changes (not on tab change)
   // Use both product.id and product.stockCode so effect fires on every product switch
-  const effectiveStockCode = product.stockCode || product.id;
   useEffect(() => {
-    if (!effectiveStockCode) return;
+    const sc = product.stockCode || product.id;
+    if (!sc) return;
+
+    // Cancellation flag — prevents stale async responses from overwriting newer product recs
+    let cancelled = false;
+
     setRecsLoading(true);
     setRecs([]);
     cachedData.current = null;
-    fetchHybridRecommendations(effectiveStockCode, 16, 0.7).then((data) => {
+    clientFallbackRecs.current = [];
+
+    fetchHybridRecommendations(sc, 16, 0.7).then((data) => {
+      if (cancelled) return; // stale response — discard
       setRecsLoading(false);
       if (!data) {
         // Backend unreachable (e.g. on mobile/production) — use client-side fallback
@@ -137,8 +147,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             ...r,
             image: getProductImage(r.description, r.stock_code),
           }));
-          clientFallbackRecs.current = mapped; // cache so tab switches keep recs
-          setRecs(mapped);
+          if (!cancelled) {
+            clientFallbackRecs.current = mapped; // cache so tab switches keep recs
+            setRecs(mapped);
+          }
         }
         return;
       }
@@ -156,8 +168,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         }))
       );
     });
+
+    // Cleanup: mark this effect's fetch as stale when product changes
+    return () => {
+      cancelled = true;
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [product.id, product.stockCode]);
+  }, [product.id, product.stockCode, allProducts]);
 
   // When the user switches tabs, re-filter from backend cache OR keep client-side recs
   useEffect(() => {

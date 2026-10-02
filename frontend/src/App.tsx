@@ -77,6 +77,10 @@ export const App: React.FC = () => {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
+  // Navigation counter: increments on every recommendation click to force
+  // ProductDetailPage to fully remount with fresh state & recommendations
+  const [navCount, setNavCount] = useState(0);
+
   // Filters
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: '',
@@ -299,23 +303,23 @@ export const App: React.FC = () => {
         (p.stockCode || '').toLowerCase() === scLower ||
         p.id.toLowerCase() === scLower
     );
+
     if (found) {
-      setQuickViewProduct(found);
+      // Spread into a new object so React always detects a state change,
+      // even if the same product reference was already in state
+      setQuickViewProduct({ ...found });
     } else {
-      // Not in local list — create a placeholder and try to enrich from backend
+      // Not in local list — create a placeholder from backend data
       const placeholder = convertBackendProduct({ stock_code: stockCode, description: stockCode });
-      setQuickViewProduct(placeholder);
-      // Try to look up real description from backend products already loaded
+      // Try to look up real description from backend products (whitespace-insensitive)
       const backendMatch = products.find(
         (p) => (p.stockCode || '').replace(/\s/g, '').toLowerCase() === scLower.replace(/\s/g, '')
       );
-      if (backendMatch) {
-        setQuickViewProduct(backendMatch);
-      }
+      setQuickViewProduct(backendMatch ? { ...backendMatch } : placeholder);
     }
-    // Scroll the detail page back to top
-    const pdp = document.getElementById('pdp-root');
-    if (pdp) pdp.scrollTop = 0;
+
+    // Increment navCount to force ProductDetailPage to remount with a clean state
+    setNavCount((n) => n + 1);
   };
 
   const handlePageChange = (page: number) => {
@@ -609,6 +613,7 @@ export const App: React.FC = () => {
       {/* Full-screen Product Detail Page */}
       {quickViewProduct && (
         <ProductDetailPage
+          key={`${quickViewProduct.id}-${navCount}`}
           product={quickViewProduct}
           allProducts={products}
           onClose={() => setQuickViewProduct(null)}
