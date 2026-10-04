@@ -24,9 +24,11 @@ wheels/
 venv/
 ENV/
 
-# Large ML data files (>100MB)
+# Large ML data files (managed via Git LFS)
 backend/*.pkl
 !backend/products_df.pkl
+!backend/collab_sim_df.pkl
+!backend/content_sim_df.pkl
 
 # Node
 node_modules/
